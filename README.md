@@ -4,7 +4,7 @@ A website built for TSA's 2025-2026 software development competition. Made to re
 ## :pencil2: Description
 LearnSigns is a website to help users, from beginner to advanced. 
 
-## :sparkles: Features
+## :sparkles: Future Features
   - **Vocab List** with linked videos and user made study sets
   - **Quiz Mode** to solidify terms in a fun, easy way
   - **Articles** expanding past vocab
