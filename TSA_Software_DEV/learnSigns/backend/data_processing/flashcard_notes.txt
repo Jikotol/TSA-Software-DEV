@@ -1,0 +1,29 @@
+entry name == eng term 
+
+handedness --> if the entry doesn't have non-dominant hand shape or overidden by 1h or 2h
+
+gloss = set()
+each eng term can multiple glosses
+
+variants -- only covers one variant :/ idk what to do with
+(MAYBE) add variant_1a variant_2b for multiple variants???
+
+notes --> stay the same, maybe sep via ";" for different sections in react later
+
+compile entries --> similar english words from asllrp :( --> top level, string
+
+current structure
+
+all_words = {
+    main_gloss: {
+        asl_glosses: set(),
+        notes: str,
+        compound_word: compounded_word,
+        similar_terms: str,
+        handedness: int,
+        variants: set(
+            {gloss: str,
+            notes: }
+        )
+    }
+}
