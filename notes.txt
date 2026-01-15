@@ -1,0 +1,65 @@
+Flashcard sets are only for COMMON WORDS
+
+I need
+    - A flashcard maker
+        - go through csv and get info for word, then return a flashcard obj
+    - pre-converted flashcards
+    - vocab list that shows videos (random selection of words everytime user goes through page)
+        - maybe by choosing a random gloss num?
+    - need to check video func
+    - need way to get definition
+
+
+maybe anki inspired know level like know well, know a ittle, know next to none
+
+Flashcards --> objects
+
+have dict of information
+
+entry data goes into Flashcard
+
+access each entry from entry id
+
+when user presses option, sends the entry id to program to make flashcard of that entry
+
+number, region
+
+search engine has to be STRONG!!!!
+- user can misspell words
+- searches by compound, user term, and variants
+
+Links english words to dictionary, the asl bank --> needs internet access
+
+make column for title on its definition page. for ex. 15 is on front of flashcard, but is fifteen as a title with 15 in parathesis
+
+shows graph of what words they struggled with, with cool bar graph animations
+record attempts in it, shows effort, gives celebration based on effort
+
+want piano, zelda style celebration sound(maybe garage band or smth)
+
+CSV can have 3 compounded words PLAN FOR MORE THAN 2
+
+OVERVIEW
+main_gloss - english translation of gloss
+og_gloss - unchanged gloss from asllrp data set
+dominant_start_handshape - dominant start handshape
+non_dominant_start_handshape - non-dominant start handshape
+dominant_end_handshape - dominant end handshape
+non_dominant_end_handshape - non-dominant end handshape
+handedness - how many hands are used for that specific sign
+variant_1 - first variant of the first occuring variant
+variant_2 - second variant of the first occuring variant
+compounded_word - cleaned up string with compound words intact with orginal glosses
+notes - Extra info, things separated with ";"
+(MAYBE)related english words
+(MAYBE) notes --> type + extra info
+
+notes:
+type of word(ex. adjective, noun, adverb, verb)lowercase definition or synonym **USED WHEN WORD HAS MULTIPLE DEFINITIONS** **Can have variant ex. adjective/adverb**
+
+fingerspelled
+
+ASLLRP search up data set
+compound words --> asterisk represents +, keeps special notation like (1h) and fs-, but still links page
+
+Cool idea - put handshapes in a graph with pictures

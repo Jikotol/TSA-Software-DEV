@@ -1,0 +1,23 @@
+Extract data from website TOP PRIORITY
+
+vocab word --> dict with word, category?, word type, link to video, definition
+
+
+
+
+questions
+
+should i download the video of the sign, or just put the path to the video
+
+
+
+WEEK 1 (Dec 1 - Dec 6)
+- Convert csv file into json
+- Code inputs between the html pages
+- Design html pages
+- Finish css course
+- Implement flashcard data getter 
+
+
+
+WEEK 11 (Feb 16)

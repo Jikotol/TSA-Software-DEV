@@ -1,0 +1,23 @@
+fudge
+
+variants --> different ways to sign the same thing ex. JELLY --> fs-JELLY & JELLY
+
+Ok, i just need to do like 3 columns, compound word is practically done, just gotta add back the stuff. Gotta actually do the 
+variants which isnt that hard cuz its just looking for stuff in lowercase, but still. Then ig still keep the good/thank you 
+whatever in a sep col cuz i did it alr and can use it for searching. Then add vid and similar eng words 
+
+im stuck, and i dont know how to get out of it. 
+
+Display_components make sense. you have compounded words and you want it to look good, so i made it make sense. But also, for accuracy, I keep the variants in the + thing.
+This is meant to show how the word is made in a simple way
+
+Variants don't make sense. Originally I thought that having a separate variants column made sense. The variants column had the english gloss, then I could link it via its name in the data set bcos its hard to search by original gloss since its in the dictionary as a value. Honestly, it shouldn't be named variants, maybe main variant gloss. 
+
+Components make sense. This would get rid of all of the more specific notation for variants, so it would have the root gloss. This would actually combine the paragraph above section and just add plusses between the words. This would allow me to link the pages that that sign uses.
+
+Handedness isn't done right. I should look at the dominant hand and non dominant hand and the value is a bool saying whether that sign uses one hand or two hands. There is no variable boolean, its both. The value of handedness is only for that specific sign, not considering its other forms(rows).
+
+Synonymous Glosses don't make sense. Originally I thought these were glosses, but they are just the same sign(maybe not exact but close) for multiple words. These should be treated exactly the same as the other words, but can be seperated because I can use them in my conversion function. I can substitute the components with the right main gloss. But this doesn't make sense because I'll already have the original gloss in the display_components. For some reason, I wanted to use the display_components for linking which is wrong.
+
+Heres where I was getting confused, but now know.
+I'm mixing flashcard logic, aka looking at all of its variants, and trying to represent them in the csv, when it should really be in the top level of the main entry dict key values. 
