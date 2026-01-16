@@ -1,8 +1,8 @@
-import sqlite3
 import os
 import pandas as pd
 from db import get_connection
 from re import findall
+from handshape_utils import make_hs_freq_dict
 
 
 MAIN_GLOSSES_CMD = """
@@ -47,27 +47,8 @@ CREATE TABLE IF NOT EXISTS components (
 )
 """
 
-"""
-1. initialize the main_gloss row if not there
-2. make gloss and use the index of the main gloss in its initialization
-3. handedness
-4. components
-
-?. Where update new head_id gloss?
-
-FIRST - make gloss
-SECOND - search for main_gloss w/ row.main_gloss and create new if not
-THEN - put the gloss_id as the head_gloss_id
-That should be a separate function, like update head_id
-Then do handedness and components
-
-
-Search for main_gloss id
-if it doesn't exist, make a new one and set the gloss id as the header, HOWEVER, since its not made yet, i have no access to it
-"""
-
-
-def input_csv_data_to_db(conn, df):
+def input_csv_data_to_db(conn, df, hs_freq_dict):
+    
     cur = conn.cursor()
     for row in df.itertuples():
         # Make gloss in glosses table
@@ -84,11 +65,6 @@ def input_csv_data_to_db(conn, df):
             cur.execute("INSERT INTO main_glosses (main_gloss) VALUES (?)", (row.main_gloss,))
             main_id = cur.lastrowid
         # Updates the gloss with the right main_gloss id for linking
-        cur.execute("UPDATE glosses SET main_id=? WHERE gloss_id=?", (main_id, gloss_id))
-
-        update_head_gloss_id(cur, gloss_id, main_id)
-
-        
         # Insert gloss handshape info if available
         cur.execute("INSERT INTO handshapes (gloss_id, dom_start, dom_end, non_dom_start, non_dom_end) VALUES (?, ?, ?, ?, ?)", (
             gloss_id, 
@@ -107,8 +83,9 @@ def input_csv_data_to_db(conn, df):
                 components_list[1],
                 components_list[2] if len(components_list) > 2 else None
             ))
+        update_head_gloss_id(cur, gloss_id, main_id, hs_freq_dict)
 
-def update_head_gloss_id(cur, gloss_id, main_id):
+def update_head_gloss_id(cur, gloss_id, main_id, hs_freq_dict):
     """
     Links the main_gloss and the head gloss by updating head_gloss_id in the main_glosses table. A head gloss is, usually, the simplest
     of a gloss. This means, it's not a variant, it doesn't use rare signs, and is idealy one single sign. This is used for the default
@@ -124,7 +101,7 @@ def update_head_gloss_id(cur, gloss_id, main_id):
     head_id_tuple = cur.fetchone()
     if head_id_tuple and head_id_tuple[0]:
         cur.execute("UPDATE main_glosses SET head_gloss_id=? WHERE main_id=?", 
-                    (get_head_gloss(cur, gloss_id, head_id_tuple[0]), main_id))
+                   (get_head_gloss(cur, gloss_id, head_id_tuple[0], hs_freq_dict), main_id))
     else:
         cur.execute("UPDATE main_glosses SET head_gloss_id=? WHERE main_id=?", (gloss_id, main_id))
 
@@ -138,90 +115,60 @@ def value_exists(cur, table, col, value):
     return False
 
 
-# IN PROGRESS
-HANDSHAPE_VALID_COLUMNS = ["main_id", "asl_gloss", "display_parts", "notes"]
-def get_gloss_handshape(gloss, selection="*"):
-    if selection not in HANDSHAPE_VALID_COLUMNS:
-        raise ValueError(f"handshape column \"{selection}\" is not allowed")
-    get_gloss_id()
-def get_gloss_component(gloss):
-    ...
+def get_head_gloss(cur, gloss_id, head_gloss_id, hs_freq_dict):
+    if compare_gloss_names(cur, gloss_id, head_gloss_id) == gloss_id:
+        # Update func
+        return gloss_id
+    if compare_handshapes_freq(cur, gloss_id, head_gloss_id, hs_freq_dict) == gloss_id:
+        return gloss_id
+    return head_gloss_id
+def compare_handshapes_freq(cur, gloss_id, head_gloss_id, hs_freq_dict):
+    """
+    handshapes: tuple
+    rtype: float
+    """
+    cur.execute("SELECT dom_start, dom_end, non_dom_start, non_dom_end FROM handshapes WHERE gloss_id=?", (gloss_id,))
+    new_gloss_handshapes = cur.fetchone()
 
-def get_gloss_id(gloss):
-    with get_connection() as conn:
-        cur = conn.cursor()
-    return cur.fetchall()
+    cur.execute("SELECT dom_start, dom_end, non_dom_start, non_dom_end FROM handshapes WHERE gloss_id=?", (head_gloss_id,))
+    head_gloss_handshapes = cur.fetchone()
 
-# PROBLEM --> asl_glosses 
-def reset_db_file(db_file):
-    if os.path.exists(db_file):
-        os.remove(db_file)
+    if map_hs_to_freq(new_gloss_handshapes, hs_freq_dict) > map_hs_to_freq(head_gloss_handshapes, hs_freq_dict):
+        return gloss_id
+    return head_gloss_id
+def map_hs_to_freq(handshape_tuple, hs_freq_dict):
+    """
+    Returns how rare the combonation of handshapes are. Returns a frequency value(0-1) where less is less common and more
+    is more common.
+    handshape_list: list[str]
+    rtype: float
+    """
+    hs_appearances = 0
+    for i in range(len(handshape_tuple)):
+        hs = handshape_tuple[i]
+        if hs and hs in hs_freq_dict:
+            hs_appearances += hs_freq_dict[handshape_tuple[i]]
+    return hs_appearances / len(handshape_tuple)
 
-table_commands = [MAIN_GLOSSES_CMD, GLOSSES_CMD, HANDSHAPES_CMD, COMPONENTS_CMD]
-def make_sql_tables():
-    with get_connection() as conn:
-        conn.execute("BEGIN")
-        cur = conn.cursor()
-        for cmd in table_commands:
-            cur.execute(cmd)
-
-
-# NO,#NO,U-L,,flat-O_2,,1,,,loan
-# NIGHTMARE,BAD+DREAM,B-L,,X,,1,BAD+DREAM,BAD+DREAM,
-
-# SELECT * --> whole row
-# fetchone() --> tuple
-# fetchall --> tuple list
-
-"""
-
-compare names and get list outta that
-if has one item 
-compare two glosses stats (arg = id)
-return gloss_id
-
-"""
-
-def get_head_gloss(cur, gloss_id, main_id):
-    print("hello?")
-    with get_connection() as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT head_gloss_id FROM main_glosses WHERE main_id=?", (main_id,))
-        if compare_gloss_names(cur, cur.fetchone()[0]) == cur.lastrowid():
-            print("HELL YEAH")
-        return 
-def compare_gloss_names(cur, head_gloss_id):
+def compare_gloss_names(cur, new_gloss_id, head_gloss_id):
     """
     Finds the head_gloss name based on the asl gloss. Uses heuristics to decide, considering variant tags and components
     new_gloss_id: int
-    curr_head_gloss_id: int
-    rtype: str || None
+    head_gloss_id: int
+    rtype: int
     """
-    new_gloss_id = cur.lastrowid()
-    cur.execute("SELECT main_id FROM glosses WHERE gloss_id=?", (new_gloss_id,))
-    main_id = cur.fetchone()[0]
-    cur.execute("SELECT head_gloss_id FROM main_glosses WHERE main_id=?", (main_id,))
-    head_gloss_id = cur.fetchone()[0]
+    
     # Gets gloss in main_gloss table
     cur.execute("SELECT asl_gloss FROM glosses WHERE gloss_id=?", (head_gloss_id,))
     curr_head_gloss = cur.fetchone()[0]
     # Gets recently inserted gloss
     cur.execute("SELECT asl_gloss FROM glosses WHERE gloss_id=?", (new_gloss_id,))
     new_gloss = cur.fetchone()[0]
-    print(curr_head_gloss)
-    print(new_gloss)
-    
-    """
+
     new_var_count, head_var_count = count_variant_tags(new_gloss), count_variant_tags(curr_head_gloss)
     if new_var_count < head_var_count:
         return new_gloss_id
-    elif new_var_count == new_var_count:
-        return False
-    return False"""
-
-
-
-
+    return head_gloss_id
 
 variant_tags = ["alt.", "pl", "_2", "wg", "_3", "_4", "fs-"]
 def count_variant_tags(gloss):
@@ -240,13 +187,17 @@ def count_variant_tags(gloss):
                 counter += 1
     return counter
 
-def check_handsign_freq(handshapes):
-    """
-    Averages the frequency(0-1) of the handsigns used.
-    handshapes: tuple
-    rtype: float
-    """
+def reset_db_file(db_file):
+    if os.path.exists(db_file):
+        os.remove(db_file)
 
+table_commands = [MAIN_GLOSSES_CMD, GLOSSES_CMD, HANDSHAPES_CMD, COMPONENTS_CMD]
+def make_sql_tables():
+    with get_connection() as conn:
+        conn.execute("BEGIN")
+        cur = conn.cursor()
+        for cmd in table_commands:
+            cur.execute(cmd)
 
 def main():
     reset_db_file("test.db")
@@ -256,7 +207,7 @@ def main():
         df = pd.read_csv("sample.csv")
         conn.execute("BEGIN") # sqlie does all inserts in a single transaction
 
-        input_csv_data_to_db(conn, df)
+        input_csv_data_to_db(conn, df, make_hs_freq_dict(df))
         conn.commit()
 
 if __name__ == "__main__":
