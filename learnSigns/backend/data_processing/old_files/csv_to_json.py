@@ -73,7 +73,8 @@ def get_main_entries(variants):
         return variants
     for variant in variants:
         print(variant["asl_gloss"])
-def get_hand_sign_freq(dom_hs, non_dom_hs)
+def get_hand_sign_freq(dom_hs, non_dom_hs):
+    ...
 # variants are usually the main gloss
 # compounds are usually not main gloss
 # main glosses tend to have no special characters besides dashes
