@@ -1,0 +1,63 @@
+entry name == eng term 
+
+handedness --> if the entry doesn't have non-dominant hand shape or overidden by 1h or 2h
+
+gloss = set()
+each eng term can multiple glosses
+
+notes --> stay the same, maybe sep via ";" for different sections in react later
+
+compile entries --> similar english words from asllrp :( --> top level, str
+
+current structure
+
+all_words = {
+    main_gloss: {
+        "notes": str | None,
+        "similar_eng_terms": list[str],
+        "main_entry": entry,
+        "variant_entries": list[entry]
+    }
+}
+
+entry = {
+    "asl_gloss": str,
+    "handshape": {
+        "dom": {"start": str, "end": str},
+        "non_dom": {"start": str | None, "end": str | None}
+    },
+    "components": list[str] | None,
+    "compounded_word": str | None,
+    "notes": str | None
+}
+
+NEW STRUCTURE:
+
+all_words = {
+    main_gloss: {
+        "notes": str | None,
+        "similar_eng_terms": list[str],
+        "main_entry": entry,
+        "variant_entries": list[simple_entry]
+    }
+}
+
+NEW PLAN:
+
+Since csv is ordered, same main glosses are next to eachother
+Go through row, but stop if row.main_gloss changes
+optimize_gloss_dict func which chooses a main entry and simplifies variant entries
+
+variant simple template
+
+simple_entry = {
+    "asl_gloss": str:
+    "override_handshape: {
+        "dom": {"start": str, "end": str},
+        "non_dom": {"start": str | None, "end": str | None}
+    },
+}
+
+
+**** FIX NOTES!!!!
+one note arg per main_gloss(variant ones don't use)

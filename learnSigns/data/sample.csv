@@ -1,0 +1,21 @@
+main_gloss,og_gloss,dominant_start_handshape,non_dominant_start_handshape,dominant_end_handshape,non_dominant_end_handshape,handedness,display_compound_word,components,notes
+110,CENT+TEN,1,,10,,1,CENT+TEN,CENT+TEN,number
+110,CENT+TEN,L,,10,,1,CENT+TEN,CENT+TEN,number
+12,TWELVE,cocked-U,,V,,1,,,number
+12,TWELVE,S,,V,,1,,,number
+TREE,TREE,5,psv,5,psv,2,,,
+TREE,"TREE+DCL\branch\""""",5,psv,5,flat-G,2,TREE+branch object,TREE+descriptive,branch
+YOUNG,(S)OLD+LESS-THAN,S,,B-xd,B-L,,(S)OLD+LESS-THAN,OLD+LESS-THAN,
+YOUNG,YOUNG,bent-B-L,bent-B-L,bent-B-L,bent-B-L,2,,,
+person CLIMBS/WALKS UP A LADDER,"SCL:V\person walking up ladder\""""",crvd-V,U,crvd-V,U,2,,,
+person CLIMBS/WALKS UP A LADDER,"SCL:V\person walking up ladder\""""",crvd-V,V,crvd-V,V,2,,,
+TREE,"TREE+DCL\branches\""""",5,psv,5,1,2,TREE+branch objects,TREE+descriptive,branches
+GOOD ENOUGH,(1h)GOOD/THANK-YOU+ENOUGH,B-L,,B-L,S,,GOOD+ENOUGH,GOOD/THANK-YOU+ENOUGH,
+GOOD LUCK,(1h)GOOD/THANK-YOU+LUCKY,B-L,,25,,1,GOOD+LUCKY,GOOD/THANK-YOU+LUCKY,
+GOOD MORNING,(1h)GOOD/THANK-YOU+MORNING,B-L,,B-L,B-L,,GOOD+MORNING,GOOD/THANK-YOU+MORNING,
+GOOD MORNING,(1h)GOOD/THANK-YOU+(1h)MORNING,B-L,,B-L,,1,GOOD+MORNING,GOOD/THANK-YOU+MORNING,
+GOOD NIGHT,(1h)GOOD/THANK-YOU+NIGHT,bent-B-L,,bent-B-L,B-L,,GOOD+NIGHT,GOOD/THANK-YOU+NIGHT,
+GOOD NIGHT,GOOD+NIGHT,B-L,B-L,bent-B-L,bent-B-L,2,GOOD+NIGHT,GOOD+NIGHT,
+GOOD-LOOKING,FACE+NICE/CLEAN,1,,B-L,B-L,,FACE+NICE,FACE+NICE/CLEAN,
+GOOD/THANK YOU,GOOD/THANK-YOU,B-L,,B-L,,1,,,
+TEN,TEN,10,,10,,1,,,
