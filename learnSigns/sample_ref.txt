@@ -1,0 +1,43 @@
+1|1|CENT+TEN|CENT+TEN|number
+2|1|CENT+TEN|CENT+TEN|number
+3|2|TWELVE||number
+4|2|TWELVE||number
+5|3|TREE||
+6|3|TREE+DCL\branch\""|TREE+branch object|branch
+7|4|(S)OLD+LESS-THAN|(S)OLD+LESS-THAN|
+8|4|YOUNG||
+9|5|SCL:V\person walking up ladder\""||
+10|5|SCL:V\person walking up ladder\""||
+11|3|TREE+DCL\branches\""|TREE+branch objects|branches
+12|6|(1h)GOOD/THANK-YOU+ENOUGH|GOOD+ENOUGH|
+13|7|(1h)GOOD/THANK-YOU+LUCKY|GOOD+LUCKY|
+14|8|(1h)GOOD/THANK-YOU+MORNING|GOOD+MORNING|
+15|8|(1h)GOOD/THANK-YOU+(1h)MORNING|GOOD+MORNING|
+16|9|(1h)GOOD/THANK-YOU+NIGHT|GOOD+NIGHT|
+17|9|GOOD+NIGHT|GOOD+NIGHT|
+18|10|FACE+NICE/CLEAN|FACE+NICE|
+19|11|GOOD/THANK-YOU||
+20|12|TEN||
+
+handshapes
+1|1|1|10||
+2|2|L|10||
+3|3|cocked-U|V||
+4|4|S|V||
+5|5|5|5|psv|psv
+6|6|5|5|psv|flat-G
+7|7|S|B-xd||B-L
+8|8|bent-B-L|bent-B-L|bent-B-L|bent-B-L
+9|9|crvd-V|crvd-V|U|U
+10|10|crvd-V|crvd-V|V|V
+11|11|5|5|psv|1
+12|12|B-L|B-L||S
+13|13|B-L|25||
+14|14|B-L|B-L||B-L
+15|15|B-L|B-L||
+16|16|bent-B-L|bent-B-L||B-L
+17|17|B-L|bent-B-L|B-L|bent-B-L
+18|18|1|B-L||B-L
+19|19|B-L|B-L||
+20|20|10|10||
+

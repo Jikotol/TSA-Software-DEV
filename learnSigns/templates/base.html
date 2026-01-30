@@ -9,8 +9,8 @@
 <body>
     <nav>
         <ul>
-            <li><a href="home">Home</a></li>
-            <li><a href="study">Study</a></li>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('browse') }}">Browse</a></li>
         </ul>
     </nav>
     {% block content %}{% endblock %}

@@ -25,6 +25,15 @@ CREATE TABLE IF NOT EXISTS flashcards (
     FOREIGN KEY(gloss_id) REFERENCES glosses(gloss_id)
 )
 """
+VIDEOS_CMD = """
+CREATE TABLE IF NOT EXISTS videos (
+    video_id INTEGER PRIMARY KEY,
+    youtube_url TEXT NOT NULL,
+    credit TEXT NOT NULL,
+    gloss_id INTEGER NOT NULL,
+    FOREIGN KEY(gloss_id) REFERENCES glosses(gloss_id)
+)
+"""
 
 def make_sql_tables(table_commands):
     with get_connection() as conn:
@@ -36,5 +45,5 @@ def make_sql_tables(table_commands):
 
 
 if __name__ == "__main__":
-    table_commands = [USERS_CMD, FLASHCARD_SETS_CMD, FLASHCARDS_CMD]
+    table_commands = [USERS_CMD, FLASHCARD_SETS_CMD, FLASHCARDS_CMD, VIDEOS_CMD]
     make_sql_tables(table_commands)

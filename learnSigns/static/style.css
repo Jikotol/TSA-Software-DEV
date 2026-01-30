@@ -1,7 +1,19 @@
 ul {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+body {
+    padding: 50px;
+}
+.grid {
+    display: flex;
+    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25vw, 1fr));
+}
+.video-block {
+    margin: 1;
 }

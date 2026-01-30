@@ -1,5 +1,6 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql.expression import func
 import os
 
 app = Flask(__name__)
@@ -16,6 +17,7 @@ class User(db.Model):
     _id = db.Column("user_id", db.Integer, primary_key=True) # auto assigns id to each entry
 
     username = db.Column("username", db.String(100), nullable=False, unique=True)
+    flashcard_sets = db.relationship("FlashcardSet", backref="flashcard_sets")
     
     def __init__(self, username):
         self.username = username
@@ -25,14 +27,14 @@ class FlashcardSet(db.Model):
     _id = db.Column("set_id", db.Integer, primary_key=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
-    user = db.relationship("User", backref="flashcard_sets")
+    cards = db.relationship("Flashcard", backref="flashcard")
 
 class Flashcard(db.Model):
     __tablename__ = "flashcard"
     _id = db.Column("flashcard_id", db.Integer, primary_key=True)
 
+    gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
     set_id = db.Column(db.Integer, db.ForeignKey("flashcard_sets.set_id"))
-    set = db.relationship("FlashcardSet", backref="flashcards")
 
 class MainGloss(db.Model):
     __tablename__ = "main_glosses"
@@ -41,14 +43,21 @@ class MainGloss(db.Model):
     main_gloss = db.Column("main_gloss", db.String(100), nullable=False)
     head_gloss_id = db.Column("head_gloss_id", db.String(100), nullable=False)
 
+    glosses = db.relationship("Gloss", backref="glosses")
+
 class Gloss(db.Model):
     __tablename__ = "glosses"
     _id = db.Column("gloss_id", db.Integer, primary_key=True)
 
-    main_gloss_id = db.Column(db.Integer, db.ForeignKey("main_glosses.main_id"))
-    main_gloss = db.relationship("MainGloss", backref="glosses")
+    asl_gloss = db.Column("asl_gloss", db.String(200), nullable=False)
 
-class Handshapes(db.Model):
+    main_id = db.Column(db.Integer, db.ForeignKey('main_glosses.main_id'))
+    
+    video = db.relationship("Video", backref="gloss", uselist=False, foreign_keys="[Video.gloss_id]")
+    handshape = db.relationship("Handshape", backref="handshapes", uselist=False)
+    component = db.relationship("Components", backref="components", uselist=False)
+
+class Handshape(db.Model):
     __tablename__ = "handshapes"
     _id = db.Column("handshape_id", db.Integer, primary_key=True)
 
@@ -58,7 +67,6 @@ class Handshapes(db.Model):
     non_dom_end = db.Column("non_dom_end", db.String(100))
 
     gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
-    gloss = db.relationship("Gloss", backref="handshapes", uselist=False)
 
 class Components(db.Model):
     __tablename__ = "components"
@@ -69,27 +77,67 @@ class Components(db.Model):
     word3 = db.Column("word3", db.String(100))
 
     gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
-    gloss = db.relationship("Gloss", backref="components", uselist=False)
 
-@app.route("/study")
-def study():
-    return render_template("study.html")
+class Video(db.Model):
+    __tablename__ = "videos"
+    _id = db.Column("video_id", db.Integer, primary_key=True)
+    youtube_url = db.Column("youtube_url", db.String(300), nullable=False)
+    credit = db.Column("credit", db.String(100), nullable=False)
+    
+    gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
+
+def get_random_row(obj):
+    # Use func.random() which SQLAlchemy compiles to the correct DB-specific function
+    random_row = obj.query.order_by(func.random()).first()
+    return random_row
+
+@app.route("/browse")
+def browse():
+    random_main_head_tuples = []
+    used_ids = set()
+
+    while len(random_main_head_tuples) < 6:
+        main_gloss = get_random_row(MainGloss)
+
+        if main_gloss._id in used_ids:
+            continue
+
+        used_ids.add(main_gloss._id)
+
+        head_gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first()
+        random_main_head_tuples.append((main_gloss, head_gloss))
+    print(random_main_head_tuples)
+    return render_template("browse.html", main_head_tuples=random_main_head_tuples)
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    return render_template("base.html")
 
-@app.route("/vocab/<int:gloss_id>")
-def vocab():
-    # 
-    return render_template("vocab.html")
+@app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>")
+def vocab(main_gloss_id, gloss_id):
+    main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
+    gloss = Gloss.query.filter_by(_id=gloss_id).first()
+    return render_template("vocab.html", main_gloss=main_gloss, gloss=gloss)
+
+@app.route("/api/vocab/<int:main_gloss_id>/<int:gloss_id>")
+def variant_info(main_gloss_id, gloss_id):
+    gloss = Gloss.query.filter_by(_id=gloss_id).first()
+    return {
+        "asl_gloss": gloss.asl_gloss,
+        "youtube_url": gloss.video.youtube_url,
+        "credit": gloss.video.credit
+    }
 
 if __name__ == "__main__":
     with app.app_context():
-        db.session.add(User(username="youoouoasd"))
-        db.session.commit()
-    # app.run(debug=True)
+        app.run(debug=True)
+
+def make_flashcard(gloss):
+    ...
+
+
+
 
 """
 GET data when 
@@ -97,4 +145,9 @@ page loads or when render template
 
 SEND data when 
 user clicks/submits/interacts
+
+youoouoasd
+
+MainGloss.query.filter_by(_id="12").first()
+
 """

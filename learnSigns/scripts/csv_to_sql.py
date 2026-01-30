@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from db import get_connection
+from db import get_connection, csv_file 
 from re import findall
 from handshape_utils import make_hs_freq_dict
 from init_db import make_sql_tables
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS main_glosses (
 GLOSSES_CMD = """
 CREATE TABLE IF NOT EXISTS glosses (
     gloss_id INTEGER PRIMARY KEY, 
-    main_id TEXT,
+    main_id INTEGER,
     asl_gloss TEXT NOT NULL,
     display_parts TEXT,
     notes TEXT,
@@ -65,6 +65,8 @@ def input_csv_data_to_db(conn, df, hs_freq_dict):
             cur.execute("INSERT INTO main_glosses (main_gloss) VALUES (?)", (row.main_gloss,))
             main_id = cur.lastrowid
         # Updates the gloss with the right main_gloss id for linking
+        cur.execute("UPDATE glosses SET main_id = ? WHERE gloss_id = ?", (main_id, gloss_id))
+        
         # Insert gloss handshape info if available
         cur.execute("INSERT INTO handshapes (gloss_id, dom_start, dom_end, non_dom_start, non_dom_end) VALUES (?, ?, ?, ?, ?)", (
             gloss_id, 
@@ -199,7 +201,7 @@ def main():
     make_sql_tables(table_commands)
     with get_connection() as conn:
         cur = conn.cursor()
-        df = pd.read_csv("/Users/emerizaarce/Desktop/TSA_Software_DEV/learnSigns/data/sample.csv")
+        df = pd.read_csv(csv_file)
         conn.execute("BEGIN") # sqlie does all inserts in a single transaction
         input_csv_data_to_db(conn, df, make_hs_freq_dict(df))
         conn.commit()

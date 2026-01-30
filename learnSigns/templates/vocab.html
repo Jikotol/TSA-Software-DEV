@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Vocab{% endblock %}
 {% block content %}
-    <form>
-        <ul>
-            <button type="submit" name="word-option" value="{{ gloss_id }}">{{ }}</button>
-            <button type="submit" name="word-option" value="{{ gloss_id }}">{{}}</button>
-            <button type="submit" name="word-option" value="{{ gloss_id }}">{{}}</button>
-        </ul>
-    </form>
+    <h1>{{ main_gloss.main_gloss }}</h1>
+    <h4 id="gloss-label">VARIANT GLOSS</h4>
+    <iframe id="gloss-video">VIDEO</iframe>
+    <button id="sync-btn">reload</button>
+
+    <script>
+        
+        const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
+        const GLOSS_ID = "{{ gloss._id }}";
+
+        async function load_gloss() {
+            const request = await fetch(`/api/vocab/${MAIN_GLOSS_ID}/${GLOSS_ID}`);
+            const data = await request.json();
+            document.getElementById("gloss-label").innerText = data.asl_gloss;
+            document.getElementById("gloss-video").src = data.youtube_url;
+        }
+        var syncButton = document.getElementById("sync-btn");
+        syncButton.addEventListener("click", load_gloss);
+        
+    </script>
 {% endblock %}

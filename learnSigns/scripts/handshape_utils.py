@@ -21,19 +21,9 @@ def make_hs_freq_dict(df):
                 freq_dict[handsign] = 0
             freq_dict[handsign] += 1
     return freq_dict
-def get_handedness(row):
-    """
-    Uses the handsigns of each gloss to determine whether the gloss uses one, both, or a mix with
-    each word in a compound gloss having different handedness.
-
-    row: namedtuple
-    rtype: int || None
-    """
-
 
 def main():
     df = pd.read_csv("final_data.csv")
     hs_freq_dict = make_hs_freq_dict(df)
-    print(hs_freq_dict["B-L"], hs_freq_dict["B"])
 if __name__ == "__main__":
     main()

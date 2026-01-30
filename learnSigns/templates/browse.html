@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Browse{% endblock %}
+{% block content %}
+    <h1>ASL Glosses</h1>
+    <div class="grid">
+        {% for (main_gloss, head_gloss) in main_head_tuples %}
+            {% set main_gloss = main_gloss %}
+            {% set head_gloss = head_gloss %}
+            {% include "partials/_video-block.html" %}
+        {% endfor %}
+    </div>
+
+{% endblock %}
