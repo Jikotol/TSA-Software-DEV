@@ -50,6 +50,8 @@ class Gloss(db.Model):
     _id = db.Column("gloss_id", db.Integer, primary_key=True)
 
     asl_gloss = db.Column("asl_gloss", db.String(200), nullable=False)
+    display_name = db.Column("display_name", db.String(200))
+    notes = db.Column("notes", db.String(200))
 
     main_id = db.Column(db.Integer, db.ForeignKey('main_glosses.main_id'))
     
@@ -117,16 +119,23 @@ def home():
 @app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def vocab(main_gloss_id, gloss_id):
     main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
-    gloss = Gloss.query.filter_by(_id=gloss_id).first()
-    return render_template("vocab.html", main_gloss=main_gloss, gloss=gloss)
+    # gloss = Gloss.query.filter_by(_id=gloss_id).first()
+    return render_template("vocab.html", main_gloss=main_gloss)
 
 @app.route("/api/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def variant_info(main_gloss_id, gloss_id):
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
     return {
         "asl_gloss": gloss.asl_gloss,
+        "display_name": gloss.display_name,
         "youtube_url": gloss.video.youtube_url,
-        "credit": gloss.video.credit
+        "credit": gloss.video.credit,
+        "handshapes": {
+            "dom_start": gloss.handshape.dom_start,
+            "dom_end": gloss.handshape.dom_end,
+            "non_dom_start": gloss.handshape.non_dom_start,
+            "non_dom_end": gloss.handshape.non_dom_end
+        }
     }
 
 if __name__ == "__main__":

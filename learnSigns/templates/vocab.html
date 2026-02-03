@@ -2,23 +2,79 @@
 {% block title %}Vocab{% endblock %}
 {% block content %}
     <h1>{{ main_gloss.main_gloss }}</h1>
-    <h4 id="gloss-label">VARIANT GLOSS</h4>
-    <iframe id="gloss-video">VIDEO</iframe>
-    <button id="sync-btn">reload</button>
+    <select id="gloss-select">
+        {% for g in main_gloss.glosses %}
+            <option value="{{ g._id }}">{{ g.asl_gloss }}</option>
+        {% endfor %}
+    </select>
+
+    <h2 id="gloss-header">GLOSS-HEADER-PLACEHOLDER</h2>
+    <iframe id="gloss-video">GLOSS VIDEO</iframe>
+
+    <div id="handshape-table"></div>
 
     <script>
-        
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
-        const GLOSS_ID = "{{ gloss._id }}";
 
-        async function load_gloss() {
-            const request = await fetch(`/api/vocab/${MAIN_GLOSS_ID}/${GLOSS_ID}`);
+        // Get the gloss selected with the gloss_id in URL
+        async function loadGlossFromRoute(pathname) {
+
+            const request = await fetch("/api" + pathname);
             const data = await request.json();
-            document.getElementById("gloss-label").innerText = data.asl_gloss;
+            if (data.display_name) {
+                document.getElementById("gloss-header").innerText = data.display_name;
+            } else {
+                document.getElementById("gloss-header").innerText = data.asl_gloss;
+            }
+            
             document.getElementById("gloss-video").src = data.youtube_url;
+            
+            loadHandshapeTable(data.handshapes);
         }
-        var syncButton = document.getElementById("sync-btn");
-        syncButton.addEventListener("click", load_gloss);
-        
+
+        // Gets a handshape table and inserts data
+        async function loadHandshapeTable(handshapeData) {
+            const response = await fetch("{{ url_for('static', filename='handshapes-table.html') }}");
+            const htmlString = await response.text();
+
+            const parser = new DOMParser();
+
+            const doc = parser.parseFromString(htmlString, 'text/html');
+    
+            doc.getElementsByClassName("dom-start")[0].innerText = handshapeData.dom_start;
+            doc.getElementsByClassName("dom-end")[0].innerText = handshapeData.dom_end;
+            doc.getElementsByClassName("non-dom-start")[0].innerText = handshapeData.non_dom_start;
+            doc.getElementsByClassName("non-dom-end")[0].innerText = handshapeData.non_dom_end;
+
+            handshapeTableEl = document.getElementById("handshape-table");
+            
+            for (var i=0; i<doc.body.childNodes.length; i++) {
+                handshapeTableEl.appendChild(doc.body.childNodes[i]);
+            }
+        }
+
+        function navigateToGloss(glossID) {
+            history.pushState({}, "", `/vocab/${MAIN_GLOSS_ID}/${glossID}`);
+        }
+
+        glossSelectEl = document.getElementById("gloss-select");
+        glossSelectEl.addEventListener("change", () => {
+            navigateToGloss(glossSelectEl.value);
+        })
+
+        // loads info when url changes
+        window.addEventListener("DOMContentLoaded", () =>
+        loadGlossFromRoute(window.location.pathname)
+    );
+        window.navigation.addEventListener("navigate", (event) => {
+            const url = new URL(event.destination.url);
+            loadGlossFromRoute(url.pathname); 
+        });
+
     </script>
 {% endblock %}
+
+<!--
+ADD CHECKING FOR A VALID PATH -> id gotta be in select values
+CONVENTION -> avoid putting element in the name, go off of intent -> navigateToGloss
+-->

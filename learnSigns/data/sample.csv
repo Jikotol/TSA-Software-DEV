@@ -1,8 +1,6 @@
 main_gloss,og_gloss,dominant_start_handshape,non_dominant_start_handshape,dominant_end_handshape,non_dominant_end_handshape,handedness,display_compound_word,components,notes
 110,CENT+TEN,1,,10,,1,CENT+TEN,CENT+TEN,number
-110,CENT+TEN,L,,10,,1,CENT+TEN,CENT+TEN,number
 12,TWELVE,cocked-U,,V,,1,,,number
-12,TWELVE,S,,V,,1,,,number
 TREE,TREE,5,psv,5,psv,2,,,
 TREE,"TREE+DCL\branch\""""",5,psv,5,flat-G,2,TREE+branch object,TREE+descriptive,branch
 YOUNG,(S)OLD+LESS-THAN,S,,B-xd,B-L,,(S)OLD+LESS-THAN,OLD+LESS-THAN,

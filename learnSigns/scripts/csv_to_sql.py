@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS glosses (
     gloss_id INTEGER PRIMARY KEY, 
     main_id INTEGER,
     asl_gloss TEXT NOT NULL,
-    display_parts TEXT,
+    display_name TEXT,
     notes TEXT,
     FOREIGN KEY(main_id) REFERENCES main_glosses(main_id)
 )
@@ -52,7 +52,7 @@ def input_csv_data_to_db(conn, df, hs_freq_dict):
     cur = conn.cursor()
     for row in df.itertuples():
         # Make gloss in glosses table
-        cur.execute("INSERT INTO glosses (asl_gloss, display_parts, notes) VALUES (?, ?, ?)", (
+        cur.execute("INSERT INTO glosses (asl_gloss, display_name, notes) VALUES (?, ?, ?)", (
             row.og_gloss, row.display_compound_word, row.notes
         ))
         gloss_id = cur.lastrowid
