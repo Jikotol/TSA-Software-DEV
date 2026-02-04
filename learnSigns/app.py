@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.expression import func
+import utils
 import os
 
 app = Flask(__name__)
@@ -88,18 +89,13 @@ class Video(db.Model):
     
     gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
 
-def get_random_row(obj):
-    # Use func.random() which SQLAlchemy compiles to the correct DB-specific function
-    random_row = obj.query.order_by(func.random()).first()
-    return random_row
-
 @app.route("/browse")
 def browse():
     random_main_head_tuples = []
     used_ids = set()
 
     while len(random_main_head_tuples) < 6:
-        main_gloss = get_random_row(MainGloss)
+        main_gloss = utils.get_random_row(MainGloss)
 
         if main_gloss._id in used_ids:
             continue
@@ -108,7 +104,7 @@ def browse():
 
         head_gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first()
         random_main_head_tuples.append((main_gloss, head_gloss))
-    print(random_main_head_tuples)
+    
     return render_template("browse.html", main_head_tuples=random_main_head_tuples)
 
 @app.route("/")
@@ -125,6 +121,8 @@ def vocab(main_gloss_id, gloss_id):
 @app.route("/api/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def variant_info(main_gloss_id, gloss_id):
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
+    hs_img_dict = utils.get_hs_imgs(gloss)
+    print(utils.get_hs_imgs(gloss))
     return {
         "asl_gloss": gloss.asl_gloss,
         "display_name": gloss.display_name,
@@ -135,7 +133,8 @@ def variant_info(main_gloss_id, gloss_id):
             "dom_end": gloss.handshape.dom_end,
             "non_dom_start": gloss.handshape.non_dom_start,
             "non_dom_end": gloss.handshape.non_dom_end
-        }
+        },
+        "hs_videos": utils.get_hs_imgs(gloss)
     }
 
 if __name__ == "__main__":

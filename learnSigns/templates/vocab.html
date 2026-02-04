@@ -13,8 +13,10 @@
 
     <div id="handshape-table"></div>
 
+
     <script>
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
+        const HS_LIST = ["dom_start", "dom_end", "non_dom_start", "non_dom_end"];
 
         // Get the gloss selected with the gloss_id in URL
         async function loadGlossFromRoute(pathname) {
@@ -29,24 +31,38 @@
             
             document.getElementById("gloss-video").src = data.youtube_url;
             
-            loadHandshapeTable(data.handshapes);
+            loadHandshapeTable(data.handshapes, data.hs_videos);
         }
 
         // Gets a handshape table and inserts data
-        async function loadHandshapeTable(handshapeData) {
+        async function loadHandshapeTable(handshapeData, handshapeVideos) {
             const response = await fetch("{{ url_for('static', filename='handshapes-table.html') }}");
             const htmlString = await response.text();
 
             const parser = new DOMParser();
 
             const doc = parser.parseFromString(htmlString, 'text/html');
-    
-            doc.getElementsByClassName("dom-start")[0].innerText = handshapeData.dom_start;
+
+            for (var i=0;i<4;i++) {
+                var p = document.createElement("p");
+                var hs_img = document.createElement("img");
+
+                p.innerText = handshapeData[HS_LIST[i]];
+                console.log(handshapeVideos[HS_LIST[i]]);
+                hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+
+                print()
+                if (HS_LIST[i] == "dom_start") {
+                    doc.getElementsByClassName("dom-start")[0].appendChild(p);
+                    doc.getElementsByClassName("dom-start")[0].appendChild(hs_img);
+                }
+            }
+
             doc.getElementsByClassName("dom-end")[0].innerText = handshapeData.dom_end;
             doc.getElementsByClassName("non-dom-start")[0].innerText = handshapeData.non_dom_start;
             doc.getElementsByClassName("non-dom-end")[0].innerText = handshapeData.non_dom_end;
 
-            handshapeTableEl = document.getElementById("handshape-table");
+            const handshapeTableEl = document.getElementById("handshape-table");
             
             for (var i=0; i<doc.body.childNodes.length; i++) {
                 handshapeTableEl.appendChild(doc.body.childNodes[i]);

@@ -1,4 +1,4 @@
-hs_video_map = {
+hs_image_map = {
     "A": "A_handshape_img.png",
     "10": "10_handshape_img.png",
     "S": "S_handshape_img.png",

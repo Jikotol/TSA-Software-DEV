@@ -2,45 +2,4 @@ instance --> sqlite database
 static --> files that don't change aka css, imgs, etc
 templates --> html files
 
-Still have to learn
-
-{% extends "base.html" %}
-{% block title %}Vocab{% endblock %}
-{% block content %}
-    <h1>{{ main_gloss.main_gloss }}</h1>
-    <h4 id="gloss-label">VARIANT GLOSS</h4>
-    <iframe id="gloss-video">VIDEO</iframe>
-    <select id="gloss-select">
-        {% for g in main_gloss.glosses %}
-            <option value="{{ g._id }}">{{ g.asl_gloss }}</option>
-        {% endfor %}
-    </select>
-
-    <script>
-        
-        const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
-        const GLOSS_ID = "{{ gloss._id }}";
-        const CURRENT_PATHNAME = window.location.pathname;
-
-        async function load_gloss() {
-            console.log(CURRENT_PATHNAME);
-            const request = await fetch("/api" + CURRENT_PATHNAME);
-            const data = await request.json();
-            document.getElementById("gloss-label").innerText = data.asl_gloss;
-            document.getElementById("gloss-video").src = data.youtube_url;
-        }
-        function change_url(glossID) {
-            history.pushState({}, "", `/api/vocab/${MAIN_GLOSS_ID}/${glossID}`)
-        }
-        var glossSelect = document.getElementById("gloss-select");
-        glossSelect.addEventListener("change", () => {
-            console.log("yello?")
-            change_url(glossSelect.value);
-            load_gloss();
-        });
-
-        
-    </script>
-{% endblock %}
-
-<!-- MAKE URL CHANGE -->
+{{ url_for('static', filename=handshapeVideos.dom_start) }}
