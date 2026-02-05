@@ -2,9 +2,10 @@
 {% block title %}Vocab{% endblock %}
 {% block content %}
     <h1>{{ main_gloss.main_gloss }}</h1>
+    <button {% if not user %}hidden="hidden"{% endif %}></button>
     <select id="gloss-select">
         {% for g in main_gloss.glosses %}
-            <option value="{{ g._id }}">{{ g.asl_gloss }}</option>
+            <option value="{{ g._id }}" >{{ g.asl_gloss }}</option>
         {% endfor %}
     </select>
 
@@ -48,22 +49,21 @@
                 var hs_img = document.createElement("img");
 
                 p.innerText = handshapeData[HS_LIST[i]];
-                console.log(handshapeVideos[HS_LIST[i]]);
-                hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
-
-                print()
-                if (HS_LIST[i]) {
-                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(p);
+                
+                if (handshapeVideos[HS_LIST[i]]) {
+                    hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+                }
+                
+                if (handshapeData[HS_LIST[i]]) {
+                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(p);
                     if (handshapeVideos[HS_LIST[i]]) {
-                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(hs_img);
-                    } else {
-                        hs_img.remove()
+                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(hs_img);
                     }
                 }
             }
-
             const handshapeTableEl = document.getElementById("handshape-table");
-            
+
+            handshapeTableEl.innerHTML = "";
             for (var i=0; i<doc.body.childNodes.length; i++) {
                 handshapeTableEl.appendChild(doc.body.childNodes[i]);
             }
@@ -75,13 +75,21 @@
 
         glossSelectEl = document.getElementById("gloss-select");
         glossSelectEl.addEventListener("change", () => {
-            navigateToGloss(glossSelectEl.value);
+            if (glossSelectEl.value) {
+                navigateToGloss(glossSelectEl.value);
+            }
         })
 
         // loads info when url changes
-        window.addEventListener("DOMContentLoaded", () =>
-        loadGlossFromRoute(window.location.pathname)
-    );
+        window.addEventListener("DOMContentLoaded", () => {
+        if (glossSelectEl.value) {
+            loadGlossFromRoute(window.location.pathname);
+        } else {
+            glossSelectEl.value = "{{ main_gloss.head_gloss_id }}";
+            loadGlossFromRoute(window.location.pathname);
+        }
+        
+    });
         window.navigation.addEventListener("navigate", (event) => {
             const url = new URL(event.destination.url);
             loadGlossFromRoute(url.pathname); 

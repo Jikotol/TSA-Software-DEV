@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-    <p>Hello person!</p>
+    <h1>Welcome {% if not user %}Stranger{% endif %}{{ user.username }}</h1>
 {% endblock %}

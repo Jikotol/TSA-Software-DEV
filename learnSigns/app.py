@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = "dev"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "sqlite:///" + os.path.join(app.root_path, "data", "sample.db")
+    "sqlite:///" + os.path.join(app.root_path, "data", "full.db")
 )
 
 app.permanent_session_lifetime = timedelta(hours=1) 
@@ -30,17 +30,33 @@ class FlashcardSet(db.Model):
     __tablename__ = "flashcard_sets"
     _id = db.Column("set_id", db.Integer, primary_key=True)
     
-    name = db.Column("set_name", db.String(100))
+    name = db.Column("set_name", db.String(100), nullable=False)
+    default_front = db.Column("default_front", db.String(10), default="term", nullable=False)
+    default_back = db.Column("default_back", db.String(10), default="visual", nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     cards = db.relationship("Flashcard", backref="flashcard")
 
+    def __init__(name, default_front, default_back):
+        self.name = name
+        self.default_front = default_front
+        self.default_back = default_back
+
 class Flashcard(db.Model):
     __tablename__ = "flashcard"
     _id = db.Column("flashcard_id", db.Integer, primary_key=True)
+   
+    front = db.Column("front", db.String(10))
+    back = db.Column("back", db.String(10))
+    term = db.Column("term", db.String(200))
 
     gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
     set_id = db.Column(db.Integer, db.ForeignKey("flashcard_sets.set_id"))
+
+    def __init__(front=None, back=None, term=None):
+        self.front = front
+        self.back = back
+        self.term = term
 
 class MainGloss(db.Model):
     __tablename__ = "main_glosses"
@@ -114,7 +130,7 @@ def browse():
 
 @app.route("/home")
 def home():
-    return render_template("base.html")
+    return render_template("home.html")
 
 @app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def vocab(main_gloss_id, gloss_id):
@@ -160,10 +176,14 @@ def study(set_id, flashcard_num):
 @app.route("/sets")
 def sets():
     if "user_id" in session:
-        user = User.query.filter_by(_id=session["user_id"])
+        user = User.query.filter_by(_id=session["user_id"]).first()
         return render_template("sets.html", sets=user.flashcard_sets)
     else:
-        return "<h1>Please sign in</h1>"
+        return redirect(url_for("login"))
+
+@app.context_processor
+def inject_user():
+    return dict(user=current_user())
 
 @app.route("/", methods=["POST", "GET"])
 @app.route("/login", methods=["POST", "GET"])
@@ -178,6 +198,12 @@ def login(): # send info using post request
 
         return redirect(url_for("home"))
     return render_template("login.html")
+    
+@app.route("/logout")
+def logout():
+    del session["user_id"]
+    del session["username"]
+    return redirect(url_for("login"))
 
 def sign_in(name):
     found_user = User.query.filter_by(username=name).first()
@@ -185,11 +211,17 @@ def sign_in(name):
         session["user_id"] = found_user._id
         session["username"] = found_user.username
     else:
-        return True
+        return False
+
 def add_user(username):
     user = User(username)
     db.session.add(user)
     db.session.commit()
+
+def current_user():
+    if "user_id" in session:
+        return User.query.filter_by(_id=session["user_id"]).first()
+    return None
 
 if __name__ == "__main__":
     with app.app_context():

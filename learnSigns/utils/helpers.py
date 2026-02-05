@@ -9,6 +9,8 @@ def get_random_row(obj):
 def get_hs_img_path(hs, add_images_path=True):
     if hs in hs_image_map.keys():
         return "images/handshapes/" + hs_image_map[hs] if add_images_path else hs_image_map[hs]
+    else:
+        return None
 
 def get_hs_imgs(gloss):
     """

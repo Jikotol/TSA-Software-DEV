@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS flashcard_sets (
     set_id INTEGER PRIMARY KEY,
     set_name TEXT NOT NULL,
     user_id INTEGER,
+    default_front TEXT NOT NULL,
+    default_back TEXT NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 )
 """
@@ -21,9 +23,10 @@ CREATE TABLE IF NOT EXISTS flashcards (
     flashcard_id INTEGER PRIMARY KEY,
     set_id INTEGER NOT NULL,
     gloss_id INTEGER NOT NULL,
-    
+    front TEXT,
+    back TEXT,
+    term TEXT,
     FOREIGN KEY(set_id) REFERENCES flashcard_sets(set_id),
-    FOREIGN KEY(user_id) REFERENCES flashcard_sets(user_id),
     FOREIGN KEY(gloss_id) REFERENCES glosses(gloss_id)
 )
 """
