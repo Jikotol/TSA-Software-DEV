@@ -1,0 +1,14 @@
+for (var i=0;i<4;i++) {
+                var p = document.createElement("p");
+                var hs_img = document.createElement("img");
+
+                p.innerText = handshapeData[HS_LIST[i]];
+                hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+
+                
+                doc.getElementsByClassName("dom_start")[0].appendChild(p);
+                if (p.innerText) {
+                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(hs_img);
+                }
+                
+            }

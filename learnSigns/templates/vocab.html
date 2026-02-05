@@ -52,15 +52,15 @@
                 hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
 
                 print()
-                if (HS_LIST[i] == "dom_start") {
-                    doc.getElementsByClassName("dom-start")[0].appendChild(p);
-                    doc.getElementsByClassName("dom-start")[0].appendChild(hs_img);
+                if (HS_LIST[i]) {
+                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(p);
+                    if (handshapeVideos[HS_LIST[i]]) {
+                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(hs_img);
+                    } else {
+                        hs_img.remove()
+                    }
                 }
             }
-
-            doc.getElementsByClassName("dom-end")[0].innerText = handshapeData.dom_end;
-            doc.getElementsByClassName("non-dom-start")[0].innerText = handshapeData.non_dom_start;
-            doc.getElementsByClassName("non-dom-end")[0].innerText = handshapeData.non_dom_end;
 
             const handshapeTableEl = document.getElementById("handshape-table");
             

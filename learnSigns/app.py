@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
+from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.expression import func
 import utils
@@ -10,6 +11,8 @@ app.secret_key = "dev"
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     "sqlite:///" + os.path.join(app.root_path, "data", "sample.db")
 )
+
+app.permanent_session_lifetime = timedelta(hours=1) 
 
 db = SQLAlchemy(app)
 
@@ -26,6 +29,8 @@ class User(db.Model):
 class FlashcardSet(db.Model):
     __tablename__ = "flashcard_sets"
     _id = db.Column("set_id", db.Integer, primary_key=True)
+    
+    name = db.Column("set_name", db.String(100))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     cards = db.relationship("Flashcard", backref="flashcard")
@@ -107,7 +112,6 @@ def browse():
     
     return render_template("browse.html", main_head_tuples=random_main_head_tuples)
 
-@app.route("/")
 @app.route("/home")
 def home():
     return render_template("base.html")
@@ -121,8 +125,14 @@ def vocab(main_gloss_id, gloss_id):
 @app.route("/api/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def variant_info(main_gloss_id, gloss_id):
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
-    hs_img_dict = utils.get_hs_imgs(gloss)
-    print(utils.get_hs_imgs(gloss))
+    hs_img_dict = {}
+
+    for key, value in utils.get_hs_imgs(gloss).items():
+        if value:
+            hs_img_dict[key] = url_for("static", filename=value)
+        else:
+            hs_img_dict[key] = None
+
     return {
         "asl_gloss": gloss.asl_gloss,
         "display_name": gloss.display_name,
@@ -134,16 +144,61 @@ def variant_info(main_gloss_id, gloss_id):
             "non_dom_start": gloss.handshape.non_dom_start,
             "non_dom_end": gloss.handshape.non_dom_end
         },
-        "hs_videos": utils.get_hs_imgs(gloss)
+        "hs_videos": hs_img_dict
     }
+
+@app.route("/study/<int:set_id>/<int:flashcard_num>") 
+def study(set_id, flashcard_num):
+    """
+    Will have the render template thing for actually studying the flashcards
+    """
+
+    flashcard_set = FlashcardSet.query.filter_by(_id=set_id)
+
+    return render_template("study.html", flashcard_set=flashcard_set, flashcard_num=flashcard_num)
+
+@app.route("/sets")
+def sets():
+    if "user_id" in session:
+        user = User.query.filter_by(_id=session["user_id"])
+        return render_template("sets.html", sets=user.flashcard_sets)
+    else:
+        return "<h1>Please sign in</h1>"
+
+@app.route("/", methods=["POST", "GET"])
+@app.route("/login", methods=["POST", "GET"])
+def login(): # send info using post request
+    if request.method == "POST" and request.form["nm"]:
+        session.permanent = True # makes it expire w/ the time thing
+
+        username = request.form["nm"]
+        if not sign_in(username):
+            add_user(username)
+            sign_in(username)
+
+        return redirect(url_for("home"))
+    return render_template("login.html")
+
+def sign_in(name):
+    found_user = User.query.filter_by(username=name).first()
+    if found_user:
+        session["user_id"] = found_user._id
+        session["username"] = found_user.username
+    else:
+        return True
+def add_user(username):
+    user = User(username)
+    db.session.add(user)
+    db.session.commit()
 
 if __name__ == "__main__":
     with app.app_context():
+        print(User.query.all())
         app.run(debug=True)
+        
 
 def make_flashcard(gloss):
     ...
-
 
 
 
