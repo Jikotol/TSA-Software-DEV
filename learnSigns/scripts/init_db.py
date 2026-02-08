@@ -22,11 +22,11 @@ FLASHCARDS_CMD = """
 CREATE TABLE IF NOT EXISTS flashcards (
     flashcard_id INTEGER PRIMARY KEY,
     set_id INTEGER NOT NULL,
-    gloss_id INTEGER NOT NULL,
+    gloss_id INTEGER,
     front TEXT,
     back TEXT,
     term TEXT,
-    FOREIGN KEY(set_id) REFERENCES flashcard_sets(set_id),
+    FOREIGN KEY(set_id) REFERENCES flashcard_sets(set_id) ,
     FOREIGN KEY(gloss_id) REFERENCES glosses(gloss_id)
 )
 """

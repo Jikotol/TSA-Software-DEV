@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import delete
 from sqlalchemy.sql.expression import func
 import utils
 import os
@@ -9,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "dev"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "sqlite:///" + os.path.join(app.root_path, "data", "full.db")
+    "sqlite:///" + os.path.join(app.root_path, "data", "sample.db")
 )
 
 app.permanent_session_lifetime = timedelta(hours=1) 
@@ -21,7 +22,7 @@ class User(db.Model):
     _id = db.Column("user_id", db.Integer, primary_key=True) # auto assigns id to each entry
 
     username = db.Column("username", db.String(100), nullable=False, unique=True)
-    flashcard_sets = db.relationship("FlashcardSet", backref="flashcard_sets")
+    flashcard_sets = db.relationship("FlashcardSet", backref="user", cascade="all, delete-orphan")
     
     def __init__(self, username):
         self.username = username
@@ -35,25 +36,26 @@ class FlashcardSet(db.Model):
     default_back = db.Column("default_back", db.String(10), default="visual", nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
-    cards = db.relationship("Flashcard", backref="flashcard")
+    cards = db.relationship("Flashcard", backref="set", cascade="all, delete-orphan")
 
-    def __init__(name, default_front, default_back):
+    def __init__(self, name, default_front, default_back, user_id):
         self.name = name
         self.default_front = default_front
         self.default_back = default_back
+        self.user_id = user_id
 
 class Flashcard(db.Model):
-    __tablename__ = "flashcard"
+    __tablename__ = "flashcards"
     _id = db.Column("flashcard_id", db.Integer, primary_key=True)
    
     front = db.Column("front", db.String(10))
     back = db.Column("back", db.String(10))
     term = db.Column("term", db.String(200))
 
-    gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
+    gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"), nullable=True)
     set_id = db.Column(db.Integer, db.ForeignKey("flashcard_sets.set_id"))
 
-    def __init__(front=None, back=None, term=None):
+    def __init__(self, front=None, back=None, term=None):
         self.front = front
         self.back = back
         self.term = term
@@ -132,7 +134,7 @@ def browse():
 def home():
     return render_template("home.html")
 
-@app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>")
+@app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>", methods=["POST", "GET"])
 def vocab(main_gloss_id, gloss_id):
     main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
     # gloss = Gloss.query.filter_by(_id=gloss_id).first()
@@ -163,21 +165,95 @@ def variant_info(main_gloss_id, gloss_id):
         "hs_videos": hs_img_dict
     }
 
-@app.route("/study/<int:set_id>/<int:flashcard_num>") 
-def study(set_id, flashcard_num):
+@app.route("/create/configure/flashcards", methods=["POST", "GET"]) 
+def configure():
+    if request.method == "POST":
+        gloss_id = request.form["gloss_id"]
+        gloss = Gloss.query.filter_by(_id=gloss_id).first()
+        main_gloss = request.form["main-gloss"]
+        
+        return render_template("configure.html", gloss=gloss, main_gloss=main_gloss)
+    return "", 204
+        
+@app.route("/create/flashcards", methods=["POST", "GET"])        
+def create():
+    """
+    Takes info from flashcard configure form, structures the data into objects and adds it to the database
+    """
+    if request.method == "POST":
+        user = User.query.filter_by(_id=session["user_id"]).first()
+
+        # Determine set
+        if "new-set" in request.form:
+            fc_set = FlashcardSet(
+                name=request.form["set_name"],
+                default_front=request.form["set-front"],
+                default_back=request.form["set-back"],
+                user_id=user._id
+            )
+            db.session.add(fc_set)  # <-- Add new set to session immediately
+        else:
+            fc_set = FlashcardSet.query.filter_by(_id=int(request.form["existing-set-id"])).first()
+
+        # Create Flashcard object
+        card = Flashcard(
+            front=request.form.get("fc-front") if request.form["fc-front"] else fc_set.default_front,
+            back=request.form.get("fc-back") if request.form["fc-back"] else fc_set.default_back,
+            term=request.form["fc-term"]
+        )
+
+        card.gloss_id = request.form["gloss-id"]
+
+        # Append card to the set's cards
+        fc_set.cards.append(card)
+
+        # Commit everything at once
+        db.session.commit()
+
+    if request.referrer != request.url:
+        return redirect(url_for("browse"))
+    return redirect(url_for("browse"))
+
+@app.route("/study/<int:set_id>") 
+def study(set_id):
     """
     Will have the render template thing for actually studying the flashcards
     """
 
-    flashcard_set = FlashcardSet.query.filter_by(_id=set_id)
+    fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
+    
+    fc_set_json = {
+        "name": fc_set.name,
+        "default_front": fc_set.default_front,
+        "default_back": fc_set.default_back,
+    }
 
-    return render_template("study.html", flashcard_set=flashcard_set, flashcard_num=flashcard_num)
+    # Sorts cards by id
+    cards = sorted(fc_set.cards, key=lambda card: card._id)
+    
+    cards_json = []
+    for card in cards:
+        gloss = Gloss.query.filter_by(_id=card.gloss_id).first()
+
+        cards_json.append({
+            "id": card._id,
+            "front": card.front,
+            "back": card.back,
+            "term": card.term,
+            "visual": gloss.video.youtube_url,
+            "credit": gloss.video.credit
+        })
+
+    return render_template("study.html", fc_set=fc_set_json, cards=cards_json)
 
 @app.route("/sets")
 def sets():
     if "user_id" in session:
+        print(session)
         user = User.query.filter_by(_id=session["user_id"]).first()
-        return render_template("sets.html", sets=user.flashcard_sets)
+        if user.flashcard_sets:
+            return render_template("sets.html", fc_sets=user.flashcard_sets)
+        return render_template("sets.html")
     else:
         return redirect(url_for("login"))
 
@@ -195,14 +271,21 @@ def login(): # send info using post request
         if not sign_in(username):
             add_user(username)
             sign_in(username)
+        else:
+            sign_in(username)
 
         return redirect(url_for("home"))
+    if "username" in session:
+        sign_in(session["username"])
+        return render_template("home.html")
     return render_template("login.html")
     
 @app.route("/logout")
 def logout():
-    del session["user_id"]
-    del session["username"]
+    if "user_id" in session:
+        del session["user_id"] 
+    if "username" in session:
+        del session["username"]
     return redirect(url_for("login"))
 
 def sign_in(name):
@@ -223,11 +306,16 @@ def current_user():
         return User.query.filter_by(_id=session["user_id"]).first()
     return None
 
+def clear_table(table):
+    db.session.execute(delete(table))
+    db.session.commit()
+
 if __name__ == "__main__":
     with app.app_context():
-        print(User.query.all())
+        """clear_table(Flashcard)
+        clear_table(FlashcardSet)"""
         app.run(debug=True)
-        
+
 
 def make_flashcard(gloss):
     ...

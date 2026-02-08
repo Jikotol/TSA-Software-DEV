@@ -1,6 +1,123 @@
 {% extends "base.html" %}
 {% block title %}Study{% endblock %}
 {% block content %}
-    <!-- has a selected flashcard which the user can study with -->
-    <h1></h1>
+    <!--
+    flashcard
+    front -> term visual
+    back -> term visual
+    term -> str
+
+    basically, gemerate element thats gonna go in div, either visual or term
+    find out which w/ a var telling front or back
+
+    -->
+    <h1>{{ fc_set["name"] }}</h1>
+
+    <div id="flashcard-div">
+    </div>
+    <button id="back-btn"><--</button>
+    <button id="next-btn">--></button>
+    <button id="flip-btn">Flip Card</button>
+    <p id="flashcard-num-el"></p>
+
+    
+
+<script>
+    const fcSet = {{ fc_set | tojson }};
+    const cards = {{ cards | tojson }};
+
+    let currentCardIndex = 0;
+    let side = "front";
+
+    const flashcardDiv = document.getElementById("flashcard-div");
+    const flashcardNumEl = document.getElementById("flashcard-num-el");
+
+    let termEl = "";
+    let visualEl = "";
+
+    // Loads the correct data into the iframe and h1 element to be appended later
+    function loadCard() {
+        card = cards[currentCardIndex]
+        flashcardNumEl.innerText = (currentCardIndex + 1) + "/" + cards.length;
+
+        clearFlashcard();
+        side = "front";
+
+        termEl = createTermEl(card);
+        visualEl = createVisualEl(card);
+
+        syncSide(card, termEl, visualEl, side)
+    }
+
+    // Picks whether to show a visual or a term element
+    function syncSide(card, termEl, visualEl, side) {
+        if (side == "front") {
+            if (card["front"] == "term") {
+                flashcardDiv.append(termEl);
+            } else {
+                flashcardDiv.append(visualEl);
+            }
+        } else {
+            if (card["back"] == "term") {
+                flashcardDiv.append(termEl);
+            } else {
+                flashcardDiv.append(visualEl);
+            }
+        }
+    }
+    
+    function createVisualEl(card) {
+        visualEl = document.createElement("iframe");
+        visualEl.src = card["visual"];
+        return visualEl
+    }
+    function createTermEl(card) {
+        termEl = document.createElement("h1");
+        termEl.innerText = card["term"];
+        return termEl
+    }
+
+    const flipBTN = document.getElementById("flip-btn")
+    flipBTN.addEventListener("click", () => {
+        flipCard();
+    });
+
+    function flipCard() {
+        clearFlashcard();
+        if (side == "front") {
+            side = "back"
+        } else {
+            side = "front"
+        }
+        syncSide(cards[currentCardIndex], termEl, visualEl, side);
+    }
+
+    const nextBTN = document.getElementById("next-btn");
+
+    // Goes to the next flashcard
+    nextBTN.addEventListener("click", () => {
+        if (currentCardIndex < cards.length-1) {
+            currentCardIndex += 1;
+            loadCard();
+        }
+    });
+
+    const backBTN = document.getElementById("back-btn")
+
+    // Goes to the previous card
+    backBTN.addEventListener("click", () => {
+        if (currentCardIndex > 0) {
+            currentCardIndex -= 1;
+            loadCard();
+        }
+    });
+
+    function clearFlashcard() {
+        flashcardDiv.innerHTML = "";
+    }
+
+    
+    loadCard()
+
+</script>
 {% endblock %}

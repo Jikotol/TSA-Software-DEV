@@ -2,12 +2,17 @@
 {% block title %}Vocab{% endblock %}
 {% block content %}
     <h1>{{ main_gloss.main_gloss }}</h1>
-    <button {% if not user %}hidden="hidden"{% endif %}></button>
-    <select id="gloss-select">
-        {% for g in main_gloss.glosses %}
-            <option value="{{ g._id }}" >{{ g.asl_gloss }}</option>
-        {% endfor %}
-    </select>
+
+    <form action="/create/configure/flashcards" method="POST">
+        <button type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
+        <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
+            {% for g in main_gloss.glosses %}
+                <option value="{{ g._id }}" >{{ g.asl_gloss }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="hidden" name="main-gloss" value="{{ main_gloss.main_gloss }}">
+    </form>
 
     <h2 id="gloss-header">GLOSS-HEADER-PLACEHOLDER</h2>
     <iframe id="gloss-video">GLOSS VIDEO</iframe>

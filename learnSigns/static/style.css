@@ -17,3 +17,6 @@ body {
 .video-block {
     margin: 1;
 }
+.in-line {
+    display: inline;
+}

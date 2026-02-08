@@ -1,14 +1,15 @@
-for (var i=0;i<4;i++) {
-                var p = document.createElement("p");
-                var hs_img = document.createElement("img");
+OK, heres how forms work
 
-                p.innerText = handshapeData[HS_LIST[i]];
-                hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+forms send info when submitted, how? 
 
-                
-                doc.getElementsByClassName("dom_start")[0].appendChild(p);
-                if (p.innerText) {
-                    doc.getElementsByClassName(HS_LIST[i].replace("_", "-"))[0].appendChild(hs_img);
-                }
-                
-            }
+uses names and values
+
+Sends it like name: value, like a dict in a request obj
+
+What else? 
+
+action in the form tags is the route the data gonna go, now doesn't redirect the user to 
+that page, gotta do that w/ flask cuz thats server stuff
+
+Stuff sent does not have to be input element!
+input elements are just for the user to input data.
