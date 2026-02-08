@@ -27,7 +27,7 @@ LearnSigns is a website to help users, from beginner to advanced.
 git clone <repo-url>
 cd LearnSigns
 
-''' bash
+``` bash
 # Install dependencies
 pip install -r requirements.txt
 
@@ -36,7 +36,7 @@ python3 app.py
 
 # Open in browser
 http://127.0.0.1:5000
-'''
+```
 
 ### Build Info
 LearnSigns uses a csv from the American Sign Language Linguistic Research Project(ASLLRP), which is a research based asl project which contains and categorizes various signs including variants(e.g. fingerspelled, handshape variations, different handedness, etc). LearnSigns takes that info and converts it into study-ready flashcards by inserting them into a relational dataset. This makes learning asl more in depth, due to more detail in the signs and, therefore, enhanced learning.
