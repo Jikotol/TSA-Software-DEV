@@ -23,11 +23,11 @@ LearnSigns is a website to help users, from beginner to advanced.
   - **Progress Tracking** to motivate users to continue learning
 
 # Instructions to Run
+``` bash
 # Clone the repository
 git clone <repo-url>
 cd LearnSigns
 
-``` bash
 # Install dependencies
 pip install -r requirements.txt
 
