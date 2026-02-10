@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Vocab{% endblock %}
+{% block content %}
+
+    <h1>{{ main_gloss.main_gloss }}</h1>
+
+    <form action="/create/configure/flashcards" method="POST">
+        <button type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
+        <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
+            {% for g in main_gloss.glosses %}
+                <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="hidden" name="main-gloss" value="{{ main_gloss.main_gloss }}">
+    </form>
+
+    <h2 id="gloss-header">GLOSS-HEADER-PLACEHOLDER</h2>
+    <iframe id="gloss-video">GLOSS VIDEO</iframe>
+
+    <div id="handshape-table"></div>
+    
+
+    <script>
+        const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
+        const HS_LIST = ["dom_start", "dom_end", "non_dom_start", "non_dom_end"];
+
+        // Get the gloss selected with the gloss_id in URL
+        async function loadGlossFromRoute(pathname) {
+
+            const request = await fetch("/api" + pathname);
+            const data = await request.json();
+            if (data.display_name) {
+                document.getElementById("gloss-header").innerText = data.display_name;
+            } else {
+                document.getElementById("gloss-header").innerText = data.asl_gloss;
+            }
+            
+            document.getElementById("gloss-video").src = data.youtube_url;
+            
+            loadHandshapeTable(data.handshapes, data.hs_videos);
+        }
+
+        // Gets a handshape table and inserts data
+        async function loadHandshapeTable(handshapeData, handshapeVideos) {
+            const response = await fetch("{{ url_for('static', filename='handshapes-table.html') }}");
+            const htmlString = await response.text();
+
+            const parser = new DOMParser();
+
+            const doc = parser.parseFromString(htmlString, 'text/html');
+
+            for (var i=0;i<4;i++) {
+                var p = document.createElement("p");
+                var hs_img = document.createElement("img");
+
+                p.innerText = handshapeData[HS_LIST[i]];
+                
+                if (handshapeVideos[HS_LIST[i]]) {
+                    hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+                }
+                
+                if (handshapeData[HS_LIST[i]]) {
+                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(p);
+                    if (handshapeVideos[HS_LIST[i]]) {
+                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(hs_img);
+                    }
+                }
+            }
+            const handshapeTableEl = document.getElementById("handshape-table");
+
+            handshapeTableEl.innerHTML = "";
+            for (var i=0; i<doc.body.childNodes.length; i++) {
+                handshapeTableEl.appendChild(doc.body.childNodes[i]);
+            }
+        }
+
+        function navigateToGloss(glossID) {
+            history.pushState({}, "", `/vocab/${MAIN_GLOSS_ID}/${glossID}`);
+        }
+
+        glossSelectEl = document.getElementById("gloss-select");
+        glossSelectEl.addEventListener("change", () => {
+            if (glossSelectEl.value) {
+                navigateToGloss(glossSelectEl.value);
+            }
+        })
+
+        // loads info when url changes
+        window.addEventListener("DOMContentLoaded", () => {
+        if (glossSelectEl.value) {
+            loadGlossFromRoute(window.location.pathname);
+        } else {
+            glossSelectEl.value = "{{ main_gloss.head_gloss_id }}";
+            loadGlossFromRoute(window.location.pathname);
+        }
+        
+    });
+        window.navigation.addEventListener("navigate", (event) => {
+            const url = new URL(event.destination.url);
+            loadGlossFromRoute(url.pathname); 
+        });
+
+    </script>
+{% endblock %}
+
+<!--
+ADD CHECKING FOR A VALID PATH -> id gotta be in select values
+CONVENTION -> avoid putting element in the name, go off of intent -> navigateToGloss
+-->
