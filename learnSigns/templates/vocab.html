@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Vocab{% endblock %}
 {% block content %}
+
     <h1>{{ main_gloss.main_gloss }}</h1>
 
     <form action="/create/configure/flashcards" method="POST">
         <button type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
         <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
             {% for g in main_gloss.glosses %}
-                <option value="{{ g._id }}" >{{ g.asl_gloss }}</option>
+                <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>
             {% endfor %}
         </select>
 
@@ -18,7 +19,7 @@
     <iframe id="gloss-video">GLOSS VIDEO</iframe>
 
     <div id="handshape-table"></div>
-
+    
 
     <script>
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";

@@ -1,4 +1,0 @@
-post - secure info that cant be seen
-get - smth not secure
-
-message flashing ---> showing some kinda info from a previous page.

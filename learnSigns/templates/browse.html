@@ -1,13 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Browse{% endblock %}
 {% block content %}
-    <h1>ASL Glosses</h1>
-    <div class="grid">
-        {% for (main_gloss, head_gloss) in main_head_tuples %}
-            {% set main_gloss = main_gloss %}
-            {% set head_gloss = head_gloss %}
-            {% include "partials/_video-block.html" %}
-        {% endfor %}
-    </div>
+    <h1>All ASL Glosses</h1>
 
+    <script>
+        const glosses = {{ fc_set | tojson }};
+        const cards = {{ letter }}
+
+        async function loadGlossDiv() {
+            const response = await fetch("{{ url_for('static', filename='handshapes-table.html') }}");
+            const htmlString = await response.text();
+
+            const parser = new DOMParser();
+
+            const doc = parser.parseFromString(htmlString, 'text/html');
+        }
+        
+    </script>
 {% endblock %}
