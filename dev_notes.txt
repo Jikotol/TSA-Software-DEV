@@ -1,0 +1,3 @@
+Check error on gloss_id= 3143, main_gloss= Peeling An Orange --> sql foreign key error
+
+Reroute on configure page, doesn't go back to home

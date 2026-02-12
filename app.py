@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import delete
+from sqlalchemy import delete, or_
 from sqlalchemy.sql.expression import func
 import utils
 import os
@@ -82,7 +82,7 @@ class Gloss(db.Model):
     
     video = db.relationship("Video", backref="gloss", uselist=False, foreign_keys="[Video.gloss_id]")
     handshape = db.relationship("Handshape", backref="handshapes", uselist=False)
-    component = db.relationship("Components", backref="components", uselist=False)
+    components = db.relationship("Components", backref="components", uselist=False)
 
 class Handshape(db.Model):
     __tablename__ = "handshapes"
@@ -137,12 +137,17 @@ def get_main_head_tuples():
 @app.route("/home", methods=["POST", "GET"])
 def home():
     if request.method == "POST":
+        search = request.form["search"]
+
         # Searches with heuristics in order to find the gloss they want
-        main_gloss = find_main_gloss(request.form["search"])
+        main_gloss_list = find_main_gloss(search)
 
-        print(main_gloss)
+        print("JHSDFKHDS",main_gloss_list)
 
-        if main_gloss:
+        if len(main_gloss_list) > 1:
+            return render_template("search_results.html", search=search, main_gloss_results=main_gloss_list)
+        elif main_gloss_list:
+            main_gloss = main_gloss_list[0]
             return redirect(url_for("vocab", main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id))
         else:
             return render_template(
@@ -157,41 +162,46 @@ def home():
     return render_template("home.html", main_head_tuples=main_head_tuples)
 
 def find_main_gloss(search):
-    main_gloss = MainGloss.query.filter_by(main_gloss=search).first()
-    if main_gloss:
-        return main_gloss
 
-    # Searches for search substring as a prefix
-    main_gloss = search_main_glosses(f"%{search}", limit=1) # Returns list with one gloss object if found
-    if len(main_gloss) == 1:
-        return main_gloss[0]
+    search = search.upper()
 
-    # Searches for search substring anywhere in gloss
-    main_gloss = search_main_glosses(f"%{search}%", limit=1) 
-    if main_gloss:
-        return main_gloss[0]
+    main_gloss_list = MainGloss.query.filter_by(main_gloss=search).all()
+
+    main_gloss_list = main_gloss_list + search_main_glosses(search, limit=20) 
+    
+    main_gloss_list = main_gloss_list + search_components(search, limit=20)
 
     # Returns none if search cannot be split
-    if "-" not in search or " " not in search:
-        return None
+    if "-" not in search or " " not in search or main_gloss_list.length > 20:
+        main_gloss_list = remove_duplicates_obj_list(main_gloss_list)
+        return main_gloss_list
 
-    # 
-    for sep in ["-", " ", "/"]:
+    
+
+    for sep in ["-"]:
         if sep in search:
             parts = search.split(sep)
+            print(parts)
         else:
             continue
         for part in parts:
             part = part.strip()
             main_gloss = search_main_glosses(f"%{part}")
             if main_gloss:
-                return main_gloss[0]
+                main_gloss_list.append(main_gloss[0])
             
             main_gloss = search_main_glosses(f"%{part}%")
             if main_gloss:
-                return main_gloss[0]
-            
-    return None
+                main_gloss_list.append(main_gloss[0])
+    
+    main_gloss_list = remove_duplicates_obj_list(main_gloss_list)
+
+    return main_gloss_list
+
+def remove_duplicates_obj_list(obj_list):
+    # Creates a dict list with ids as keys for unique values, removing duplicate objects
+    # then retrieves the original objects with .values()
+    return list({obj._id: obj for obj in obj_list}.values())
 
 @app.route("/api/search/<string:search_term>")
 def get_suggestions(search_term):
@@ -210,13 +220,75 @@ def search_main_glosses(search_pattern, limit=20):
 
     return main_glosses
 
+def get_main_gloss_from_notes(search_pattern, limit=20):
+
+    # Gets list of MainGloss objects that have the search term inside of their name
+    return (
+        db.session.query(MainGloss)
+        .distinct()
+        .join(MainGloss.glosses)
+        .filter(Gloss.notes.ilike(search_pattern))
+        .limit(limit)
+        .all()
+    )
+
+def search_components(search, limit=20):
+
+    search = fr"(^|\+){search}(\+|$)"
+
+    return (
+        db.session.query(MainGloss) # To return gloss objects
+        .distinct()
+        .join(MainGloss.glosses)
+        .join(Gloss.components) # Combines current and components table to filter
+        .filter(
+            or_(
+                Components.word1.op("REGEXP")(search),
+                Components.word2.op("REGEXP")(search),
+                Components.word3.op("REGEXP")(search)
+            )   
+        )
+        .limit(limit)
+        .all()
+    )
+
 @app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>", methods=["POST", "GET"])
 def vocab(main_gloss_id, gloss_id):
     """ Returns and renders the base for the vocab page """
     main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
 
-    return render_template("vocab.html", main_gloss=main_gloss, gloss=gloss)
+    related_glosses = get_related_glosses(main_gloss)
+
+    print("hfkasdhf", related_glosses)
+
+    return render_template("vocab.html", main_gloss=main_gloss, gloss=gloss, related_glosses=related_glosses)
+
+def get_related_glosses(main_gloss):
+    """Linked vocab pages —> finds other glosses by -
+        ● Seeing if it matches notes w/ other glosses
+        ● Seeing if any of its components appear in other glosses
+    """
+
+    head_gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first()
+
+    sim_notes_list = []
+
+    if head_gloss.notes:
+        group = head_gloss.notes
+        if ";" in head_gloss.notes:
+            group = head_gloss.notes.split(";")[0]
+
+        sim_notes_list = get_main_gloss_from_notes(search_pattern=f"%{group}%", limit=6)
+    
+    appears_in_list = search_components(search=head_gloss.asl_gloss, limit=12)
+
+    return {
+        "same_notes_main_glosses": sim_notes_list,
+        "appears_in_main_glosses": appears_in_list
+    }
+
+
 
 @app.route("/api/vocab/<int:main_gloss_id>/<int:gloss_id>")
 def variant_info(main_gloss_id, gloss_id):
@@ -251,16 +323,6 @@ def variant_info(main_gloss_id, gloss_id):
         },
         "hs_videos": hs_img_dict
     }
-def get_related_glosses(gloss):
-    """Linked vocab pages —> finds other glosses by -
-        ● Seeing if it matches notes w/ other glosses
-        ● Seeing if any of its components appear in other glosses
-        ● Matching handshapes
-    """
-    related_gloss = {
-
-    }
-
 
 @app.route("/create/configure/flashcards", methods=["POST", "GET"]) 
 def configure():
@@ -298,8 +360,8 @@ def create():
 
         # Creates Flashcard object
         card = Flashcard(
-            front=request.form.get("fc-front") if request.form["fc-front"] else fc_set.default_front,
-            back=request.form.get("fc-back") if request.form["fc-back"] else fc_set.default_back,
+            front=request.form.get("fc-front"),
+            back=request.form.get("fc-back"),
             term=request.form["fc-term"]
         )
 
@@ -311,15 +373,17 @@ def create():
         # Commits all database changes
         db.session.commit()
 
-    # Returns user back to the vocab page they were on
-    if request.referrer != request.url:
-        return redirect(request.referrer)
     return redirect(url_for("home"))
 
 @app.route("/study/<int:set_id>") 
 def study(set_id):
-    """
-    Renders the study template and prepares the data for studying with flashcards to be converted into JSON.
+    """Renders the study template"""
+    return render_template("study.html")
+
+@app.route("/api/study/<int:set_id>") 
+def card_data(set_id):
+    """ 
+    Prepares the data for studying with flashcards to be converted into JSON.
 
     set_id: int
     rtype: str - An HTML string of the rendered "study.html" template.
@@ -327,13 +391,6 @@ def study(set_id):
 
     # Gets the flashcard set object
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
-    
-    # Converts the flashcardset data into a dict
-    fc_set_json = {
-        "name": fc_set.name,
-        "default_front": fc_set.default_front,
-        "default_back": fc_set.default_back,
-    }
 
     # Sorts cards by id, least to greatest
     cards = sorted(fc_set.cards, key=lambda card: card._id)
@@ -345,14 +402,17 @@ def study(set_id):
 
         cards_json.append({
             "id": card._id,
-            "front": card.front,
-            "back": card.back,
+            "front": card.front if card.front != "default" else fc_set.default_front,
+            "back": card.back if card.back != "default" else fc_set.default_back,
             "term": card.term,
             "visual": gloss.video.youtube_url,
             "credit": gloss.video.credit
         })
 
-    return render_template("study.html", fc_set=fc_set_json, cards=cards_json)
+    return json.dumps({
+        "set_name": fc_set.name,
+        "cards": cards_json
+    })
 
 @app.route("/sets")
 def sets():
@@ -454,4 +514,4 @@ if __name__ == "__main__":
     with app.app_context():
         """clear_table(Flashcard)
         clear_table(FlashcardSet)"""
-        app.run(debug=True)
+        app.run()

@@ -15,11 +15,29 @@
         <input type="hidden" name="main-gloss" value="{{ main_gloss.main_gloss }}">
     </form>
 
-    <h2 id="gloss-header">GLOSS-HEADER-PLACEHOLDER</h2>
+    <h2 id="gloss-header" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %} >GLOSS-HEADER-PLACEHOLDER</h2>
     <iframe id="gloss-video">GLOSS VIDEO</iframe>
 
     <div id="handshape-table"></div>
-    
+        
+    <div id="related-glosses-div">
+        {% if related_glosses["same_notes_main_glosses"] %}
+            <h4>Similar to:</h4>
+            {% for main_gloss in related_glosses["same_notes_main_glosses"] %}
+                <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
+                    {{ main_gloss.main_gloss }}
+                </a>
+            {% endfor %}
+        {% endif %}
+        {% if related_glosses["appears_in_main_glosses"] %}
+            <h4>Appears in:</h4>
+            {% for main_gloss in related_glosses["appears_in_main_glosses"] %}
+                <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
+                    {{ main_gloss.main_gloss }}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </div>
 
     <script>
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
