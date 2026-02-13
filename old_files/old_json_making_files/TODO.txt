@@ -1,0 +1,19 @@
+1/2/2025
+
+WORK ON TODAY
+    - conversion function
+    - change the compound word col to include (h1) and (h2)
+    - handedness - if (1h) in og_gloss, handedness == 2 and the reverse is true. Also, if there is both a dominant hand and non_dominant hand
+    its 2, otherwise it is 1 
+    - change ASLLRP_data_full
+    - add new columns
+        - start adding similar english words
+        - start adding video links
+FINISHED
+    - variants
+    - main_gloss
+    - og_gloss
+    - dominant_start_handshape
+    - non_dominant_start_handshape
+    - dominant_end_handshape
+    - non_dominant_end_handshape

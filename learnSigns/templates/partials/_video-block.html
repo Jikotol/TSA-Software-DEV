@@ -1,0 +1,11 @@
+<!-- For browse section, makes a video with a gloss header and credits at the bottom-->
+<div class="video-block" width="300px">
+    <h2><a href="vocab/{{ main_gloss._id }}/{{ head_gloss._id }}">{{ main_gloss.main_gloss.lower().title() }}</a></h2>
+    {% if head_gloss.video %}
+        <iframe src="{{ head_gloss.video.youtube_url }}"></iframe>
+        <p>{{ head_gloss.video.credit }} on Youtube</p>
+    {% else %}
+        <iframe></iframe>
+        <p>Video not found</p>
+    {% endif %}
+</div>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Study{% endblock %}
+{% block content %}
+    <!--
+    flashcard
+    front -> term visual
+    back -> term visual
+    term -> str
+
+    basically, gemerate element thats gonna go in div, either visual or term
+    find out which w/ a var telling front or back
+
+    -->
+
+    <!-- Gets flashcard partial including card and buttons -->
+    {% include "partials/_flashcard.html" %}
+
+    <!-- Links JS file for DOM manipulation -->
+    <script type="module" src="/static/sets.js"></script>
+
+{% endblock %}

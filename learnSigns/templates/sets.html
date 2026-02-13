@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Select Flashcard{% endblock %}
+{% block content %}
+    <h1>Choose Flashcard Set</h1>
+    <ul>
+        {% if fc_sets %}
+            {% for fc_set in fc_sets %}
+                <li> <a href="{{ url_for('study', set_id=fc_set._id) }}">{{ fc_set.name }}</a></li>
+            {% endfor %}
+        {% else %}
+            <p>No Flashcard Sets Found</p>
+        {% endif %}
+    </ul>
+
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <h1>Welcome {% if not user %}Visitor{% endif %}{{ user.username }}</h1>
+
+    <form action="" method="POST">
+        <label for="gloss-search">Search for ASL word: </label>
+        <div class="search-container">
+            <input id="gloss-search" name="search" type="text" placeholder="Search for ASL word">
+            <ul class="search-suggestions" id="typing-suggestions">
+                <!-- autocomplete list -->
+            </ul>
+        </div>
+    </form>
+
+    <h1>Explore More</h1>
+    <div class="grid">
+        {% for (main_gloss, head_gloss) in main_head_tuples %}
+            {% set main_gloss = main_gloss %}
+            {% set head_gloss = head_gloss %}
+            {% include "partials/_video-block.html" %}
+        {% endfor %}
+    </div>
+
+<script>
+    const searchBarEl = document.getElementById("gloss-search");
+    const suggestionsUL = document.getElementById("typing-suggestions");
+    let timeout;
+
+    searchBarEl.addEventListener("input", () => {
+        clearTimeout(timeout)
+
+        timeout = setTimeout(() => {
+            let currentSearch = searchBarEl.value;
+
+            updateSearchSuggestions(currentSearch);
+
+        }, 150);
+    })
+
+    async function updateSearchSuggestions(search) {
+
+        // Clears prior suggestions
+        suggestionsUL.innerHTML = "";
+
+        if (search) {
+            let suggestions = await generateSuggestions(search);
+        
+            for (let i=0; i<suggestions.length; i++) {
+                let suggestion = document.createElement("li")
+                suggestion.innerText = suggestions[i]
+                suggestionsUL.appendChild(suggestion)
+            }
+        }
+    }
+
+    async function generateSuggestions(search) {
+        const request = await fetch("/api/search/" + search);
+        const data = await request.json();
+        
+        return data
+
+    }
+
+</script>
+
+{% endblock %}
+

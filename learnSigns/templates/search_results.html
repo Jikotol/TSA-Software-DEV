@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Select Result{% endblock %}
+{% block content %}
+    <h1>Results for {{ search }}</h1>
+    <ul>
+        {% for result in main_gloss_results %}
+            <li><a href="{{ url_for('vocab', main_gloss_id=result._id, gloss_id=result.head_gloss_id) }}">{{ result.main_gloss}}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
