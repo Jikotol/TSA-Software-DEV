@@ -124,6 +124,7 @@ def get_main_head_tuples():
     while len(random_main_head_tuples) < 6:
         main_gloss = utils.get_random_row(MainGloss)
 
+        # Filters out duplicateds
         if main_gloss._id in used_ids:
             continue
 
@@ -136,19 +137,23 @@ def get_main_head_tuples():
 
 @app.route("/home", methods=["POST", "GET"])
 def home():
+    """ Handles home.html rendering and handles redirections from the search bar """
+    # Search bar results
     if request.method == "POST":
         search = request.form["search"]
 
         # Searches with heuristics in order to find the gloss they want
         main_gloss_list = find_main_gloss(search)
 
-        print("JHSDFKHDS",main_gloss_list)
-
-        if len(main_gloss_list) > 1:
-            return render_template("search_results.html", search=search, main_gloss_results=main_gloss_list)
-        elif main_gloss_list:
+        if len(main_gloss_list) == 1:
+            # Redirects user straight tothe vocab page
             main_gloss = main_gloss_list[0]
             return redirect(url_for("vocab", main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id))
+
+        elif main_gloss_list:
+            # Redirects user to search selection page
+            return render_template("search_results.html", search=search, main_gloss_results=main_gloss_list)
+
         else:
             return render_template(
                 "error.html", 
@@ -162,13 +167,23 @@ def home():
     return render_template("home.html", main_head_tuples=main_head_tuples)
 
 def find_main_gloss(search):
+    """
+    Returns all possible main_glosses that match the users search
+
+    search: str
+    rtype: list(MainGloss)
+    """
+    # Finds the main_gloss the user was searching for based on heuristics
 
     search = search.upper()
 
+    # Gets exact matches
     main_gloss_list = MainGloss.query.filter_by(main_gloss=search).all()
 
+    # Gets glosses with search as a substring
     main_gloss_list = main_gloss_list + search_main_glosses(search, limit=20) 
     
+    # Gets glosses if they use the search as a component
     main_gloss_list = main_gloss_list + search_components(search, limit=20)
 
     # Returns none if search cannot be split
@@ -176,20 +191,21 @@ def find_main_gloss(search):
         main_gloss_list = remove_duplicates_obj_list(main_gloss_list)
         return main_gloss_list
 
-    
-
-    for sep in ["-"]:
+    # Separates the user's search and checks the parts separately
+    for sep in ["-", " "]:
         if sep in search:
             parts = search.split(sep)
-            print(parts)
         else:
             continue
         for part in parts:
             part = part.strip()
+
+            # Gets glosses that start with the part
             main_gloss = search_main_glosses(f"%{part}")
             if main_gloss:
                 main_gloss_list.append(main_gloss[0])
-            
+
+            # Gets glosses that have the part at all
             main_gloss = search_main_glosses(f"%{part}%")
             if main_gloss:
                 main_gloss_list.append(main_gloss[0])
@@ -199,18 +215,30 @@ def find_main_gloss(search):
     return main_gloss_list
 
 def remove_duplicates_obj_list(obj_list):
+    """ Removes duplicates from a list with custom db models """
     # Creates a dict list with ids as keys for unique values, removing duplicate objects
     # then retrieves the original objects with .values()
     return list({obj._id: obj for obj in obj_list}.values())
 
 @app.route("/api/search/<string:search_term>")
 def get_suggestions(search_term):
+    """ 
+    Returns the list of glosses for the search bar search suggestions 
+    
+    search_term: str
+    rtype: str - JSON string with list of main gloss names
+    """
     suggestionsList = search_main_glosses(f"{search_term}%", limit=10)
     
     return json.dumps([main_gloss.main_gloss.title() for main_gloss in suggestionsList])
 
 def search_main_glosses(search_pattern, limit=20):
-    # Gets list of MainGloss objects that have the search term inside of their name
+    """ 
+    Returns a list of MainGloss objects that match the search pattern 
+    
+    search_pattern: str
+    rtype: list() | list(MainGloss)
+    """
     main_glosses = (
         db.session.query(MainGloss)
         .filter(MainGloss.main_gloss.ilike(search_pattern))
@@ -221,19 +249,32 @@ def search_main_glosses(search_pattern, limit=20):
     return main_glosses
 
 def get_main_gloss_from_notes(search_pattern, limit=20):
+    """
+    Returns a list of Main Gloss object that have a search in the glosses notes
 
-    # Gets list of MainGloss objects that have the search term inside of their name
+    search_pattern: str
+    limit: int
+    rtype: list() | list(MainGloss)
+    """
     return (
         db.session.query(MainGloss)
         .distinct()
-        .join(MainGloss.glosses)
-        .filter(Gloss.notes.ilike(search_pattern))
+        .join(MainGloss.glosses) # Temporarily merges tables
+        .filter(Gloss.notes.ilike(search_pattern)) 
         .limit(limit)
         .all()
     )
 
 def search_components(search, limit=20):
+    """ 
+    Searches gloss components for the search term 
+    
+    search: str
+    limit: int
+    rtype: list() | list(MainGloss)
+    """
 
+    #
     search = fr"(^|\+){search}(\+|$)"
 
     return (
@@ -254,20 +295,26 @@ def search_components(search, limit=20):
 
 @app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>", methods=["POST", "GET"])
 def vocab(main_gloss_id, gloss_id):
-    """ Returns and renders the base for the vocab page """
+    """ 
+    Returns and renders the base for vocab.html 
+    
+    main_gloss_id: int
+    gloss_id: int
+
+    rtype: str - HTML string for "vocab.html"
+    """
     main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
 
     related_glosses = get_related_glosses(main_gloss)
 
-    print("hfkasdhf", related_glosses)
-
     return render_template("vocab.html", main_gloss=main_gloss, gloss=gloss, related_glosses=related_glosses)
 
 def get_related_glosses(main_gloss):
-    """Linked vocab pages —> finds other glosses by -
-        ● Seeing if it matches notes w/ other glosses
-        ● Seeing if any of its components appear in other glosses
+    """
+    Returns related glosses by matching gloss notes and compenents, used to link vocab pages
+
+    main_gloss: MainGloss
     """
 
     head_gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first()
@@ -326,8 +373,13 @@ def variant_info(main_gloss_id, gloss_id):
 
 @app.route("/create/configure/flashcards", methods=["POST", "GET"]) 
 def configure():
-    """ Renders configure HTML which allows users to create a flashcard and add it to a new or pre-existing set """
+    """ 
+    Renders configure HTML which allows users to create a flashcard and add it to a new or pre-existing set 
+    
+    rtype: str - HTML string for "configure.html" | None
+    """
 
+    # Gets info from vocab page form
     if request.method == "POST":
         gloss_id = request.form["gloss_id"]
         gloss = Gloss.query.filter_by(_id=gloss_id).first()
@@ -338,7 +390,11 @@ def configure():
         
 @app.route("/create/flashcards", methods=["POST", "GET"])        
 def create():
-    """ Takes info from flashcard configure form, structures the data into objects and adds it to the database """
+    """ 
+    Takes info from flashcard configure form, structures the data into objects and adds it to the database 
+    
+    rtype: Response
+    """
 
     if request.method == "POST":
         user = User.query.filter_by(_id=session["user_id"]).first()
@@ -377,7 +433,12 @@ def create():
 
 @app.route("/study/<int:set_id>") 
 def study(set_id):
-    """Renders the study template"""
+    """
+    Renders the study template
+    
+    set_id: int
+    rtype: str - HTML string for "study.html"
+    """
     return render_template("study.html")
 
 @app.route("/api/study/<int:set_id>") 
@@ -386,7 +447,7 @@ def card_data(set_id):
     Prepares the data for studying with flashcards to be converted into JSON.
 
     set_id: int
-    rtype: str - An HTML string of the rendered "study.html" template.
+    rtype: str - JSON string containing cards and set info
     """
 
     # Gets the flashcard set object
@@ -420,6 +481,8 @@ def sets():
     Renders the "sets" template and injects the flashcard sets the user has.
 
     If the user is not signed in, it redirects them to the login page.
+
+    rtype: str - HTML string for "sets.html" | Response
     """
     if "user_id" in session:
 
@@ -434,8 +497,13 @@ def sets():
 
 @app.context_processor
 def inject_user():
-    # Creates global user variable containing the user object
-    # Must return a dict, but in templates, Jinja uses it as variable "user" with a User object
+    """ 
+    Creates global user variable containing the user object 
+    
+    Returns a dict, but in templates, Jinja uses it as variable "user" with a User object
+
+    rtype: dict
+    """
     return dict(user=current_user())
 
 @app.route("/", methods=["POST", "GET"])
@@ -472,7 +540,11 @@ def login():
     
 @app.route("/logout")
 def logout():
-    """ Logs current user out by updating session data """
+    """ 
+    Logs current user out by updating session data 
+    
+    rtype: Response 
+    """
     # Updates session variables relating to user
     if "user_id" in session:
         del session["user_id"] 
@@ -483,6 +555,11 @@ def logout():
     return redirect(url_for("login"))
 
 def sign_in(name):
+    """
+    Updates session variables to sign the user in
+
+    rtype: None | False
+    """
     # Gets user object associated with given username
     found_user = User.query.filter_by(username=name).first()
 
@@ -500,7 +577,11 @@ def add_user(username):
     db.session.commit()
 
 def current_user():
-    """ Returns the current user's User object """
+    """ 
+    Returns the current user's User object 
+    
+    rtype: User | None
+    """
     if "user_id" in session:
         return User.query.filter_by(_id=session["user_id"]).first()
     return None

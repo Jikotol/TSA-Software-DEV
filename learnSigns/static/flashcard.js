@@ -1,5 +1,5 @@
 /* 
-Has functions for making the html,
+Contains functions for making the HTML
 */
 
 // Updates new data to state when card changes and syncs changes
@@ -11,17 +11,16 @@ export function loadCard(cards, document, state) {
     
     state.termEl = createTermEl(card, document);
     state.visualEl = createVisualEl(card, document);
-    console.log("hello?ashfhewifhiweuaf")
 
     // Update DOM
     syncSide(cards, state)
 }
 
+
 function syncSide(cards, state) {
-    console.log("syncside")
-    console.log(state.termEl)
     let card = cards[state.index];
 
+    // Appends the correct html element based on side
     if (state.side == "front") {
         if (card["front"] == "term") {
             state.cardContainer.append(state.termEl);
