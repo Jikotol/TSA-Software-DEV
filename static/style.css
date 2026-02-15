@@ -32,3 +32,21 @@ body {
     flex-direction: column;
     width: 300px;
 }
+
+.set-card {
+    width: 250px;          /* fixed width of box */
+    height: 150px;         /* fixed height of box */
+    background-color: #f0f0f0; /* light gray background */
+    border: 2px solid #111; 
+    border-radius: 8px;     
+    display: flex;          
+    justify-content: center;
+    align-items: center;    
+    text-align: center;     
+    cursor: pointer;        
+    margin: 10px;           
+}
+
+.on-top {
+    position: absolute;
+}

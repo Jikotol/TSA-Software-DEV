@@ -1,30 +1,12 @@
-make create user account btn and appropriate html
-make flashcard creation be limited without an account using user blueprint
-Finalize schema for flashcards
+TODO:
 
-
-Fix load hs table
-put load hs table into script file 
-add components table 
-
-Flashcard final schema:
-
-class Flashcard(db.Model):
-    __tablename__ = "flashcard"
-    _id = db.Column("flashcard_id", db.Integer, primary_key=True)
-   
-    front = db.Column("front", db.String(10))
-    back = db.Column("back", db.String(10))
-    term = db.Column("term", db.String(200))
-
-    gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
-    set_id = db.Column(db.Integer, db.ForeignKey("flashcard_sets.set_id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("flashcard_sets.user_id"))
-
-Term > gloss.asl_term
-front > main_gloss.def_front
-back > main_gloss.def_back
-
-Future considerations
-Adding visual table w/ links to videos and imgs
-
+    - Make a template for flashcard set and make a dialog element to enlarge it
+    - Add delete button(for set)
+    - Add merge button
+    - Add edit button 
+        - Rename set name
+        - Delete flashcard button
+        - Edit default set sides button
+    - Alphabetized vocab list
+    - Footer with credits and alphabetized link stuff
+    - CSS

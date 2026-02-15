@@ -2,15 +2,102 @@
 {% block title %}Select Flashcard{% endblock %}
 {% block content %}
     <h1>Choose Flashcard Set</h1>
-    <ul>
-        {% if fc_sets %}
-            {% for fc_set in fc_sets %}
-                <li> <a href="{{ url_for('study', set_id=fc_set._id) }}">{{ fc_set.name }}</a></li>
-            {% endfor %}
-        {% else %}
-            <p>No Flashcard Sets Found</p>
-        {% endif %}
+    <ul id="set-cards-ul">
+    {% if fc_sets %}
+        {% for fc_set in fc_sets %}
+            <li class="set-card" data-set-id="{{ fc_set._id }}" name="set-card">{{ fc_set.name }}</div>
+        {% endfor %}
+    {% else %}
+        <p>No Flashcard Sets Found</p>
+    {% endif %}
     </ul>
 
+    {% include "partials/_set-preview.html" %}
+
+    <dialog id="delete-confirmation-msg" class="on-top">
+        <p id="delete-text">Are you sure you want to delete set (set_id)</p>
+        <button id="yes-delete">Yes</button>
+        <button id="no-delete">No</button>
+    </dialog>
+
+    <script type="module">
+        let setId = 0;
+
+        const cardsList = document.getElementById("set-cards-ul")
+
+        cardsList.addEventListener("click", (event) => {
+            console.log(event.target.dataset.setId)
+            if (event.target.tagName === "LI") {
+                setId = event.target.dataset.setId
+                loadPreview(event.target.dataset.setId);
+            }
+        })
+
+        const closeBTN = document.getElementById("close-btn");
+
+        closeBTN.addEventListener("click", () => {
+            setInfoDialog.close();
+        })
+
+        const studyBTN = document.getElementById("study-btn")
+
+        studyBTN.addEventListener("click", () => {
+            window.location.href = "/study/" + setId;
+        })
+
+
+        import { initCardData, setupFlashcardActions } from "/static/sets.js";
+        const setInfoDialog = document.getElementById("set-info-container");
+
+        async function loadPreview(setId) {
+            const dataRequest = await fetch("/api/sets/" + setId);
+            const previewRequest = await fetch("/partials/flashcard")
+
+            const setData = await dataRequest.json();
+            const previewHTML = await previewRequest.text()
+
+            document.getElementById("set-preview-div").innerHTML = previewHTML;
+            document.getElementById("set-name-header").innerText = setData.name;
+
+            let cardContainer = document.getElementById("card-div");
+            let [cards, state] = await initCardData(setId, cardContainer)
+
+            setupFlashcardActions(cards, cardContainer, document, state)
+
+            const deleteSetBTN = document.getElementById("delete-btn")
+            const deleteConfirmationMsg = document.getElementById("delete-confirmation-msg")
+            
+            deleteSetBTN.onclick = async () => {
+                deleteConfirmationMsg.showModal();
+                await deleteCurrentSet(deleteConfirmationMsg, setData.name)
+
+            };
+
+            setInfoDialog.showModal();
+        
+        }
+
+        const yesBTN = document.getElementById("yes-delete")
+        const noBTN = document.getElementById("no-delete")
+
+        async function deleteCurrentSet(deleteConfirmationMsg, setName) {
+
+            let userConfirm = false
+            document
+                .getElementById("delete-text")
+                .innerText = "Are you sure you want to delete set " + setName;
+
+
+            yesBTN.addEventListener("click", async () => {
+                await fetch("/api/sets/delete/" + setId);
+                window.location.reload()
+                });
+
+            noBTN.addEventListener("click", () => {
+                deleteConfirmationMsg.close();
+            });
+        }
+        
+    </script>
 
 {% endblock %}

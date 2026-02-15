@@ -16,6 +16,18 @@
     {% include "partials/_flashcard.html" %}
 
     <!-- Links JS file for DOM manipulation -->
-    <script type="module" src="/static/sets.js"></script>
+    
+    <script type="module">
+
+        import { initCardData, setupFlashcardActions } from "/static/sets.js";
+
+        const setId = window.location.pathname.split("/").pop();
+
+        let cardContainer = document.getElementById("card-div");
+
+        let [cards, state] = await initCardData(setId, cardContainer)
+
+        setupFlashcardActions(cards, cardContainer, document, state)
+    </script>
 
 {% endblock %}
