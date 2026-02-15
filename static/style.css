@@ -50,3 +50,15 @@ body {
 .on-top {
     position: absolute;
 }
+
+.beside {
+    display: flex;        /* letters sit next to each other */
+    flex-wrap: wrap;      /* wrap to next line if needed */
+}
+
+
+.block {
+    display: flex;
+    display: block;
+    flex-wrap: wrap
+}

@@ -45,6 +45,12 @@
             window.location.href = "/study/" + setId;
         })
 
+        const editBTN = document.getElementById("edit-btn");
+
+        editBTN.addEventListener("click", () => {
+            window.location.href = "/sets/edit/" + setId;
+        })
+
 
         import { initCardData, setupFlashcardActions } from "/static/sets.js";
         const setInfoDialog = document.getElementById("set-info-container");

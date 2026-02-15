@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Vocab List{% endblock %}
+{% block content %}
+    {% set upper_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+    {% for letter in upper_chars %}
+        {% set main_gloss_list = gloss_dict_by_letter[letter] %}
+        {% set letter = letter %}
+        {% include "partials/_letter-word-div.html" %}
+    {% endfor %}
+{% endblock %}

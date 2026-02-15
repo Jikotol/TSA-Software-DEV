@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Edit Set{% endblock %}
+{% block content %}
+    <form action="/sets/edit/{{ fc_set._id }}" id="edit-form" method="POST">
+        <h4>Current Name: {{ fc_set.name }}</h4>
+        <label for="name-input">New name:</label>
+        <input type="text" id="name-input" name="new-name">
+
+        <h4>Current: Front - {{ fc_set.default_front }}, Back - {{ fc_set.default_back }}</h4>
+        <fieldset>
+            <legend>New Default Sides:</legend>
+            <input type="radio" value="visual;term" name="new-sides" id="set-front-visual">
+            <label for="set-front-visual">Front: visual | Back: term</label>
+
+            <input type="radio" value="term;visual" name="new-sides" id="set-front-term">
+            <label for="set-front-term">Front: term | Back: visual</label>
+
+            <input type="hidden" name="new-front" id="new-front">
+            <input type="hidden" name="new-back" id="new-back">
+        </fieldset>
+
+        <h4>Select Flashcards To Delete: </h4>
+        <ul id="flashcard-select">
+            {% for card in fc_set.cards %}
+                <li>                    
+                    <input type="checkbox" value={{ card._id }} name="flashcard-del-check" id="{{ card.term }}">
+                    <label for="{{ card.term }}">{{ card.term }}</label> 
+                </li>
+            {% endfor %}
+
+            <input type="hidden" name="flashcard-del-list" id="cards-hidden-input">
+        </ul>
+
+        
+        <button type="submit" id="submit-btn">Save</button>
+        <button type="reset" id="reset-btn">Reset</button>
+
+    </form>
+
+    <button id="undo-edit">Undo Edit</button>
+    
+    <script>
+
+        document.getElementById("undo-edit").addEventListener("click", () => {
+            window.location.href = "{{ url_for('sets') }}";
+        });
+
+        const form = document.getElementById("edit-form")
+
+        form.addEventListener("submit", (event) => {
+            const newName = document.getElementById("name-input")
+
+            if (!newName.value) {
+                newName.value = "{{ fc_set.name }}";
+            }
+
+            let newSides = "";
+            
+            newSides = document.querySelector('input[name="new-sides"]:checked');
+
+            // Untangles values for sides
+            if (newSides) {
+                
+                newSides = newSides.value.split(";");
+
+                // Updates hidden side values for form submission
+                document.getElementById("new-front").value = newSides[0];
+                document.getElementById("new-back").value = newSides[1];
+            } else {
+                document.getElementById("new-front").value = "{{ fc_set.default_front }}";
+                document.getElementById("new-back").value = "{{ fc_set.default_back }}";
+            }
+
+            let flashcardDelList = document.querySelectorAll("input[name='flashcard-del-check']:checked");
+
+            // Turns NodeList into an Array for map function
+            flashcardDelList = [...flashcardDelList];
+
+            // Prevents empty sets
+            if (flashcardDelList.length == "{{ fc_set.cards|length }}") {
+                alert("Sets must have atleast one flashcard!")
+                event.preventDefault()
+            }
+
+            // Filters for the values (flashcard ids)
+            flashcardDelList = flashcardDelList.map(deleteCheck => deleteCheck.value)
+            
+            // Updates hidden card value for submission
+            document.getElementById("cards-hidden-input").value = JSON.stringify(flashcardDelList);
+        
+        });
+    </script>
+
+{% endblock %}

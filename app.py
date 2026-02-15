@@ -115,14 +115,14 @@ class Video(db.Model):
     gloss_id = db.Column(db.Integer, db.ForeignKey("glosses.gloss_id"))
 
 
-def get_main_head_tuples():
+def get_main_head_tuples(tuples=6):
     """
     Randomly gets and formats main gloss objects and their head gloss objects for video browsing in home page
     """
     random_main_head_tuples = []
     used_ids = set()
 
-    while len(random_main_head_tuples) < 6:
+    while len(random_main_head_tuples) < tuples:
         main_gloss = utils.get_random_row(MainGloss)
 
         # Filters out duplicateds
@@ -163,9 +163,16 @@ def home():
             )
 
     # Gets random main glosses their head glosses for video browsing on homepage
-    main_head_tuples = get_main_head_tuples()
+    random_vid_tuples = get_main_head_tuples()
 
-    return render_template("home.html", main_head_tuples=main_head_tuples)
+    random_word_tuples = get_main_head_tuples(25)
+
+
+    return render_template(
+                "home.html", 
+                random_vid_tuples=random_vid_tuples, 
+                random_word_tuples=random_word_tuples
+            )
 
 def find_main_gloss(search):
     """
@@ -305,6 +312,9 @@ def vocab(main_gloss_id, gloss_id):
     rtype: str - HTML string for "vocab.html"
     """
     main_gloss = MainGloss.query.filter_by(_id=main_gloss_id).first()
+
+    if gloss_id < 0:
+        gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first()
     gloss = Gloss.query.filter_by(_id=gloss_id).first()
 
     related_glosses = get_related_glosses(main_gloss)
@@ -442,6 +452,27 @@ def study(set_id):
     """
     return render_template("study.html")
 
+@app.route("/sets/edit/<int:set_id>", methods=["POST", "GET"])
+def edit_set(set_id):
+    """
+    Updates the set's default settings, name, and flashcards
+
+    set_id: int
+    rtype: str - HTML string of "edit_set.html"
+    """
+    fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
+
+    if request.method == "POST":
+        fc_set.default_front =  request.form.get("new-front")
+        fc_set.default_back = request.form.get("new-back")
+
+        fc_set.name = request.form.get("new-name")
+
+        if request.form.get("flashcard-del-list"):
+            delete_cards(json.loads(request.form.get("flashcard-del-list")))
+        
+    return render_template("edit_set.html", fc_set=fc_set)
+
 @app.route("/api/study/<int:set_id>") 
 def card_data(set_id):
     """ 
@@ -450,8 +481,6 @@ def card_data(set_id):
     set_id: int
     rtype: str - JSON string containing cards and set info
     """
-
-    print("HELLO")
 
     # Gets the flashcard set object
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
@@ -500,8 +529,6 @@ def get_set_info(set_id):
      
     return json.dumps(fc_set_json)
 
-
-
 @app.route("/api/sets/delete/<int:set_id>")
 def delete_set(set_id):
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
@@ -509,6 +536,21 @@ def delete_set(set_id):
     if fc_set:
         db.session.delete(fc_set)
         db.session.commit()
+
+def delete_cards(card_id_list):
+    print(card_id_list)
+    """
+    Deletes all the flashcards with the ids in the list
+
+    card_id_list: List(Int)
+    rtype: None
+    """
+    # Gets flashcards with matching ids and deletes them
+    cards = Flashcard.query.filter(Flashcard._id.in_(card_id_list)).delete()
+
+    db.session.commit()
+
+    print(Flashcard.query.all())
 
 @app.route("/sets")
 def sets():
@@ -528,17 +570,28 @@ def sets():
             return render_template("sets.html", fc_sets=user.flashcard_sets)
         return render_template("sets.html")
     else:
+        flash("Please log in for study mode")
         return redirect(url_for("login"))
 
-@app.route("/vocab-list")
-def generate_vocab_list():
+@app.route("/vocab_list")
+def vocab_list():
     """
     Creates a list of all glosses, categorizing them on the letter they start with
 
     rtype: str - JSON string containing main gloss and id
     """
+    gloss_dict_by_letter = {}
 
-    for letter in [""]:
+    for letter in list(string.ascii_uppercase):
+        search_pattern = letter + "%"
+
+        gloss_dict_by_letter[letter] = (
+            db.session.query(MainGloss)
+            .filter(MainGloss.main_gloss.ilike(search_pattern))
+            .all()
+        )
+
+    return render_template("vocab_list.html", gloss_dict_by_letter=gloss_dict_by_letter)
 
 @app.context_processor
 def inject_user():

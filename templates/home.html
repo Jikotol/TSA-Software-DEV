@@ -15,7 +15,18 @@
 
     <h1>Explore More</h1>
     <div class="grid">
-        {% for (main_gloss, head_gloss) in main_head_tuples %}
+        {% for (main_gloss, head_gloss) in random_word_tuples %}
+            <div>
+                <ul>
+                    <li>
+                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=head_gloss._id) }}">{{ main_gloss.main_gloss }}</a>
+                    </li>
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="grid">
+        {% for (main_gloss, head_gloss) in random_vid_tuples %}
             {% set main_gloss = main_gloss %}
             {% set head_gloss = head_gloss %}
             {% include "partials/_video-block.html" %}
