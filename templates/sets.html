@@ -29,7 +29,6 @@
 
         // User clicks the sets
         cardsList.addEventListener("click", (event) => {
-            console.log(event.target.dataset.setId)
 
             // Loads and shows set info
             if (event.target.tagName === "LI") {
@@ -71,7 +70,8 @@
             const previewHTML = await previewRequest.text()
 
             document.getElementById("set-preview-div").innerHTML = previewHTML;
-            document.getElementById("set-name-header").innerText = setData.name;
+                
+            let nameHeader = document.getElementById("set-name-header")
 
             let cardContainer = document.getElementById("card-div");
 
@@ -79,7 +79,7 @@
             let [cards, state] = await initCardData(setId, cardContainer)
 
             // Adds event listeners to preview
-            setupFlashcardActions(cards, cardContainer, document, state)
+            setupFlashcardActions(nameHeader, cards, cardContainer, document, state)
 
             const deleteSetBTN = document.getElementById("delete-btn")
             const deleteConfirmationMsg = document.getElementById("delete-confirmation-msg")

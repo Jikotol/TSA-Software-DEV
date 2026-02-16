@@ -1,12 +1,61 @@
 {% extends "base.html" %}
 {% block title %}Vocab List{% endblock %}
 {% block content %}
-    {% set upper_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
 
-    {% for letter in upper_chars %}
-        {% set main_gloss_list = gloss_dict_by_letter[letter] %}
-        {% set letter = letter %}
-        {% include "partials/_letter-word-div.html" %}
-    {% endfor %}
+    {% set upper_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+    <div id="button-container">
+        {% for letter in upper_chars %}
+            <button name="letter" value="{{ letter }}">{{ letter }}</option>
+        {% endfor %}
+    </div>
     
+    <h2 id="letter-header"></h2>
+    <ul class="explore-more" id="letter-glosses-list"></ul>
+
+        
+
+    <script>
+        letterBtnDiv = document.getElementById("button-container");
+
+        letterBtnDiv.addEventListener("click", (event) => {
+            if (event.target.tagName === "BUTTON") {
+                letter = event.target.value
+
+                loadGlosses(letter);
+            }
+        })
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadGlosses("A");
+        })
+
+        const letterHeader = document.getElementById("letter-header");
+        const glossListEl = document.getElementById("letter-glosses-list");
+
+        async function loadGlosses(letter) {
+            const request = await fetch("/api/vocab_list/" + letter);
+            const allGlosses = await request.json()
+
+            letterHeader.innerText = `Glosses starting with "${letter}"`;
+            glossListEl.innerHTML = "";
+
+            allGlosses.forEach((gloss) => {
+                let glossItem = document.createElement("li");
+
+                let glossRef= document.createElement("a");
+
+                // MainGloss._id, MainGloss.head_gloss_id, MainGloss.main_gloss
+                glossRef.innerText = gloss[2] // MainGloss.main_gloss
+
+                glossRef.href = window.location.origin + `/vocab/${gloss[0]}/${gloss[1]}`
+                
+                glossItem.appendChild(glossRef);
+
+                glossListEl.appendChild(glossItem);
+                
+            })
+        }
+            
+    </script>
 {% endblock %}
+

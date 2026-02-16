@@ -11,7 +11,7 @@
         <ul>
             <li><a href="{{ url_for('home') }}">Home</a></li>
             <li><a href="{{ url_for('sets') }}">Study</a></li>
-            <li><a href="{{ url_for('vocab_list') }}">Vocab List</a></li>
+            <li><a href="{{ url_for('vocab_list', letter='A') }}">Vocab List</a></li>
             <li {% if not user %}hidden="hidden"{% endif %}><a href="{{ url_for('logout') }}">Logout</a></li>
             <li {% if user %}hidden="hidden"{% endif %}><a href="{{ url_for('login') }}">Login</a></li>
         </ul>

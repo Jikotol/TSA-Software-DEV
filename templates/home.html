@@ -16,20 +16,15 @@
     </div>
 
     <h2>Explore More</h2>
-    <div class="explore-more">
+    <ul class="explore-more">
         {% for (main_gloss, head_gloss) in random_word_tuples %}
-            <div>
-                <ul>
-                    <li>
-                        {% set term = main_gloss.main_gloss|lower %}
-                        {% set term = term | replace("/", "/<wbr>") | safe %}
-                    </set>
-                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=head_gloss._id) }}">{{ term }}</a>
-                    </li>
-                </ul>
-            </div>
+            <li>
+                {% set term = main_gloss.main_gloss|lower %}
+                {% set term = term | replace("/", "/<wbr>") | safe %}
+                <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=head_gloss._id) }}">{{ term }}</a>
+            </li>
         {% endfor %}
-    </div>
+    </ul>
     <div class="video-container">
         {% for (main_gloss, head_gloss) in random_vid_tuples %}
             {% set main_gloss = main_gloss %}

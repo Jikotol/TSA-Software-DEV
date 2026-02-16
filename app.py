@@ -594,27 +594,33 @@ def sets():
         flash("Please log in for study mode")
         return redirect(url_for("login"))
 
-@app.route("/vocab_list")
+@app.route("/vocab_list", methods=["POST", "GET"])
 def vocab_list():
     """
     Creates a list of all glosses, categorizing them on the letter they start with
 
     rtype: str - JSON string containing main gloss and id
     """
-    gloss_dict_by_letter = {}
+    
+    return render_template("vocab_list.html")
 
-    for letter in list(string.ascii_uppercase):
-        search_pattern = letter + "%"
+@app.route("/api/vocab_list/<string:letter>", methods=["POST", "GET"])
+def get_letter_glosses(letter):
 
-        # Gets all glosses that start with/ letter
-        gloss_dict_by_letter[letter] = (
-            db.session.query(MainGloss)
-            .filter(MainGloss.main_gloss.ilike(search_pattern))
-            .all()
-        )
+    glosses_list = []
+    
+    search_pattern = letter + "%"
 
-    return render_template("vocab_list.html", gloss_dict_by_letter=gloss_dict_by_letter)
+        # Gets all glosses that start with letter
+    glosses_list = (
+        db.session.query(MainGloss._id, MainGloss.head_gloss_id, MainGloss.main_gloss)
+        .filter(MainGloss.main_gloss.ilike(search_pattern))
+        .all()
+    )
 
+    glosses_list = [list(g) for g in glosses_list]
+
+    return json.dumps(glosses_list)
 @app.context_processor
 def inject_user():
     """ 

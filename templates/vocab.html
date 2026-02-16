@@ -3,40 +3,44 @@
 {% block content %}
 
     <h1>{{ main_gloss.main_gloss }}</h1>
+    <div id="vocab-container" class="vocab-container">
+        <form action="/create/configure/flashcards" method="POST">
+            <button class="special-btns" type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
+            <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
+                {% for g in main_gloss.glosses %}
+                    <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>
+                {% endfor %}
+            </select>
 
-    <form action="/create/configure/flashcards" method="POST">
-        <button type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
-        <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
-            {% for g in main_gloss.glosses %}
-                <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>
-            {% endfor %}
-        </select>
+            <input type="hidden" name="main-gloss" value="{{ main_gloss.main_gloss }}">
+        </form>
 
-        <input type="hidden" name="main-gloss" value="{{ main_gloss.main_gloss }}">
-    </form>
+        <h2 id="gloss-header" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %} >GLOSS-HEADER-PLACEHOLDER</h2>
+        <iframe id="gloss-video">GLOSS VIDEO</iframe>
+        <div id="handshape-table"></div>
 
-    <h2 id="gloss-header" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %} >GLOSS-HEADER-PLACEHOLDER</h2>
-    <iframe id="gloss-video">GLOSS VIDEO</iframe>
-
-    <div id="handshape-table"></div>
-        
-    <div id="related-glosses-div">
-        {% if related_glosses["same_notes_main_glosses"] %}
-            <h4>Similar to:</h4>
-            {% for main_gloss in related_glosses["same_notes_main_glosses"] %}
-                <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
-                    {{ main_gloss.main_gloss }}
-                </a>
-            {% endfor %}
-        {% endif %}
-        {% if related_glosses["appears_in_main_glosses"] %}
-            <h4>Appears in:</h4>
-            {% for main_gloss in related_glosses["appears_in_main_glosses"] %}
-                <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
-                    {{ main_gloss.main_gloss }}
-                </a>
-            {% endfor %}
-        {% endif %}
+        <div id="related-glosses-div">
+            {% if related_glosses["same_notes_main_glosses"] %}
+                <h4>Similar to:</h4>
+                <div class="explore-more">
+                    {% for main_gloss in related_glosses["same_notes_main_glosses"] %}
+                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
+                            {{ main_gloss.main_gloss }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if related_glosses["appears_in_main_glosses"] %}
+                <h4>Appears in:</h4>
+                <div class="explore-more">
+                    {% for main_gloss in related_glosses["appears_in_main_glosses"] %}
+                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=main_gloss.head_gloss_id) }}">
+                            {{ main_gloss.main_gloss }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 
     <script>

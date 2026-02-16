@@ -1,14 +1,21 @@
 :root {
+    --flashcard-color: rgb(219, 224, 230);
+    --flashcard-shadow: rgb(177, 190, 206);
     --primary-color: rgb(247 242 242);
     --light-accent-color: rgb(149 179 145);
+    --mid-accent-color: rgb(123, 142, 119);
     --dark-accent-color: rgb(53 93 57);
-    --primary-text-color: rgb(76, 74, 74);
+    --primary-text-color: rgb(76 74 74);
     --offset-primary-color: rgb(247 242 242);
-    --offset-light-accent-color: rgb(212, 221, 210);
+    --offset-light-accent-color: rgb(212 221 210);
+    --complementary-color: rgb(210 180 80);
+    --shadow-color: rgb(176, 190, 175);
     --font-family: "Helvetica Neue", Arial, Verdana, sans-serif;
-    --hyperlink-color: #3980cb;
+    --hyperlink-color: rgb(57 128 203)
+    
 
 }
+
 
 body {
     background-color: var(--primary-color);
@@ -17,6 +24,7 @@ body {
     color: var(--primary-text-color);
 }
 
+body > nav,
 body > div {
     margin-bottom: 50px;
 }
@@ -53,6 +61,8 @@ nav > ul {
     background-color: var(--offset-light-accent-color);
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     padding: 25px;
+    
+
 }
 
 a {
@@ -85,3 +95,163 @@ a {
     width: 300px;
 
 }
+
+.gloss-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+fieldset {
+    margin-bottom: 20px;
+    color: var(--dark-accent-color);
+}
+
+button {
+    background-color: var(--light-accent-color);
+    color: var(--offset-primary-color);
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 0;
+    
+}
+
+#button-container {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    width: 60vw;
+    margin: 5px;
+}
+
+#button-container > button {
+    margin: 5px;
+    background-color: var(--mid-accent-color);
+}
+
+dialog[open] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-top: 0;
+    margin: 25px, 20px;
+    gap: 5px;
+    background-color: var(--primary-color);
+}
+
+dialog[open] > button {
+    margin: 5px;
+}
+
+dialog[open] > #close-btn {
+    flex-direction: row;
+}
+
+dialog {
+    width: 60vw;
+    height: 60vh;
+    padding: 30px;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-radius: 10px;
+    border-color: var(--shadow-color);
+}
+  
+#dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+}
+
+.special-btns {
+    background-color: var(--complementary-color);
+    color: var(--primary-color);
+    border-radius: 15px;
+    font-size: 16px;
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+
+.set-card {
+    width: 250px;
+    height: 150px;
+    background-color: var(--mid-accent-color);
+    border-radius: 8px;
+    display: flex;          
+    justify-content: center;
+    align-items: center;    
+    text-align: center;     
+    cursor: pointer;        
+    margin: 10px;          
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-color: var(--shadow-color);
+    border-style: solid;
+    color: var(--primary-color);
+    font-size: 16pt;
+}
+
+.study-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+.study-container > iframe{
+    width: 50%;
+
+}
+
+.flashcard {
+    display: grid;
+    place-items: center;
+    padding: 40px;
+    margin-bottom: 25px;
+    border-color: var(--flashcard-shadow);
+    border-style: solid;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-radius: 8px;     
+    background-color: var(--flashcard-color);
+    width: 30vw;
+    height: 23vh;
+}
+
+.flashcard-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    margin: 5px;
+    flex-wrap: nowrap;
+}
+
+.vocab-container > * {
+    margin-bottom: 20px;
+}
+
+.vocab-container > iframe {
+    width: 600px;
+    height: 360px;
+}
+
+table, th, td {
+    padding: 10px;
+    border-color: var(--mid-accent-color);
+    background-color: var(--light-accent-color);
+    border-style: solid;
+    border-width: 5px;
+    border-collapse: collapse;
+
+}
+

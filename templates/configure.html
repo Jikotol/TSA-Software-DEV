@@ -7,18 +7,19 @@
     <!-- Dropdown of all of users sets -->
     <form action="/create/flashcards" method="POST" id="set-card-form">
 
-        <label for="set-select">Choose a flashcard set:</label>
-        <select id="set-select" name="existing-set-id">
-            {% for set in user.flashcard_sets %}
-                <option value={{ set._id }} {% if user.flashcard_sets[0] == set %}selected{% endif %}>
-                    {{ set.name }}
-                </option>
-            {% endfor %}
-        </select>
-        <!-- Check to create a new flashcard set -->
-        <label for="create-new-set-check">Create New Set?</label>
-        <input type="checkbox" name="new-set" id="create-new-set-check" value="on">
-        
+        <div id="choose-set">
+            <label for="set-select">Choose a flashcard set:</label>
+            <select id="set-select" name="existing-set-id">
+                {% for set in user.flashcard_sets %}
+                    <option value={{ set._id }} {% if user.flashcard_sets[0] == set %}selected{% endif %}>
+                        {{ set.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            <!-- Check to create a new flashcard set -->
+            <label for="create-new-set-check">Create New Set?</label>
+            <input type="checkbox" name="new-set" id="create-new-set-check" value="on">
+        </div>
         <!-- Div will be hidden when create new set is not checked -->
         <fieldset id="set-attributes-fieldset" hidden disabled>
             <h4>Flashcard Set Properties</h4>

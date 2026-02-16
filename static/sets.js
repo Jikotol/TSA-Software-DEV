@@ -15,6 +15,7 @@ export async function initCardData(setId, cardContainer) {
 
     // Holds changing values
     let state = {
+        setName: setName,
         index: 0,
         side: "front",
         termEl: null,
@@ -25,9 +26,10 @@ export async function initCardData(setId, cardContainer) {
     return [cards, state]
 }
 
-export function setupFlashcardActions(cards, cardContainer, document, state) {
+export function setupFlashcardActions(nameHeader, cards, cardContainer, document, state) {
     /* Dynamically creates the event handlers with given data and html */
 
+    nameHeader.innerText = state.setName;
     // Flips card
     cardContainer.addEventListener("click", () => {flipCard(cards, state)});
 
@@ -44,6 +46,6 @@ export function setupFlashcardActions(cards, cardContainer, document, state) {
     document.addEventListener("DOMContentLoaded", () => {
         loadCard(cards, document, state);
         })
-    
+
     loadCard(cards, document, state);
 }

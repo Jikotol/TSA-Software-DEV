@@ -67,3 +67,21 @@ body {
     display: block;
     flex-wrap: wrap
 }
+
+dialog {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+dialog {
+    width: 60vw;
+    height: 60vh;
+    padding: 30px;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-radius: 10px;
+    border-color: var(--shadow-color);
+}
