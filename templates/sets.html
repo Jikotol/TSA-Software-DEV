@@ -9,9 +9,11 @@
         {% endfor %}
     {% else %}
         <p>No Flashcard Sets Found</p>
+        <p>To make a flashcard set, click on a gloss and click the "Create Flashcard" button<p>
     {% endif %}
     </ul>
 
+    <!-- Dialog element for previewing set and displaying set info-->
     {% include "partials/_set-preview.html" %}
 
     <dialog id="delete-confirmation-msg" class="on-top">
@@ -25,8 +27,11 @@
 
         const cardsList = document.getElementById("set-cards-ul")
 
+        // User clicks the sets
         cardsList.addEventListener("click", (event) => {
             console.log(event.target.dataset.setId)
+
+            // Loads and shows set info
             if (event.target.tagName === "LI") {
                 setId = event.target.dataset.setId
                 loadPreview(event.target.dataset.setId);
@@ -35,18 +40,21 @@
 
         const closeBTN = document.getElementById("close-btn");
 
+        // Closes dialog
         closeBTN.addEventListener("click", () => {
             setInfoDialog.close();
         })
 
         const studyBTN = document.getElementById("study-btn")
 
+        // Redirects to "study.html" to study with flashcards
         studyBTN.addEventListener("click", () => {
             window.location.href = "/study/" + setId;
         })
 
         const editBTN = document.getElementById("edit-btn");
 
+        // Redirects to "edit_set.html" to edit set data
         editBTN.addEventListener("click", () => {
             window.location.href = "/sets/edit/" + setId;
         })
@@ -66,13 +74,17 @@
             document.getElementById("set-name-header").innerText = setData.name;
 
             let cardContainer = document.getElementById("card-div");
+
+            // Sets up data for set preview
             let [cards, state] = await initCardData(setId, cardContainer)
 
+            // Adds event listeners to preview
             setupFlashcardActions(cards, cardContainer, document, state)
 
             const deleteSetBTN = document.getElementById("delete-btn")
             const deleteConfirmationMsg = document.getElementById("delete-confirmation-msg")
             
+            // Deletes current set
             deleteSetBTN.onclick = async () => {
                 deleteConfirmationMsg.showModal();
                 await deleteCurrentSet(deleteConfirmationMsg, setData.name)
@@ -86,9 +98,10 @@
         const yesBTN = document.getElementById("yes-delete")
         const noBTN = document.getElementById("no-delete")
 
+
         async function deleteCurrentSet(deleteConfirmationMsg, setName) {
 
-            let userConfirm = false
+            // Injects data for delete confirmation message
             document
                 .getElementById("delete-text")
                 .innerText = "Are you sure you want to delete set " + setName;

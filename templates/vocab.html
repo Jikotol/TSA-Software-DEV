@@ -48,6 +48,7 @@
 
             const request = await fetch("/api" + pathname);
             const data = await request.json();
+
             if (data.display_name) {
                 document.getElementById("gloss-header").innerText = data.display_name;
             } else {
@@ -56,47 +57,56 @@
             
             document.getElementById("gloss-video").src = data.youtube_url;
             
-            loadHandshapeTable(data.handshapes, data.hs_videos);
+            loadHandshapeTable(data.handshapes, data.hs_imgs);
         }
 
         // Gets a handshape table and inserts data
-        async function loadHandshapeTable(handshapeData, handshapeVideos) {
+        async function loadHandshapeTable(handshapeData, handshapeImgs) {
             const response = await fetch("{{ url_for('static', filename='handshapes-table.html') }}");
             const htmlString = await response.text();
 
             const parser = new DOMParser();
 
+            // Creates HTML elements from html string
             const doc = parser.parseFromString(htmlString, 'text/html');
 
+            // Injects each handshape in to the table
             for (var i=0;i<4;i++) {
                 var p = document.createElement("p");
                 var hs_img = document.createElement("img");
 
+                // Inserts the handshape label
                 p.innerText = handshapeData[HS_LIST[i]];
                 
-                if (handshapeVideos[HS_LIST[i]]) {
-                    hs_img.setAttribute("src", handshapeVideos[HS_LIST[i]]);
+                // Inserts video
+                if (handshapeImgs[HS_LIST[i]]) {
+                    hs_img.setAttribute("src", handshapeImgs[HS_LIST[i]]);
                 }
                 
                 if (handshapeData[HS_LIST[i]]) {
+
+                    // Gets the elements from the parsed handshape table
                     doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(p);
-                    if (handshapeVideos[HS_LIST[i]]) {
+                    if (handshapeImgs[HS_LIST[i]]) {
                     doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(hs_img);
                     }
                 }
             }
             const handshapeTableEl = document.getElementById("handshape-table");
 
+            // Adds the paragraph and image element to body
             handshapeTableEl.innerHTML = "";
             for (var i=0; i<doc.body.childNodes.length; i++) {
                 handshapeTableEl.appendChild(doc.body.childNodes[i]);
             }
         }
 
+        // Changes the URL to change the variant gloss showed
         function navigateToGloss(glossID) {
             history.pushState({}, "", `/vocab/${MAIN_GLOSS_ID}/${glossID}`);
         }
-
+        
+        // Updates DOM info when user changes select element
         glossSelectEl = document.getElementById("gloss-select");
         glossSelectEl.addEventListener("change", () => {
             if (glossSelectEl.value) {
@@ -104,16 +114,17 @@
             }
         })
 
-        // loads info when url changes
+        // Loads DOM info when url changes
         window.addEventListener("DOMContentLoaded", () => {
-        if (glossSelectEl.value) {
-            loadGlossFromRoute(window.location.pathname);
-        } else {
-            glossSelectEl.value = "{{ main_gloss.head_gloss_id }}";
-            loadGlossFromRoute(window.location.pathname);
-        }
-        
-    });
+            if (glossSelectEl.value) {
+                loadGlossFromRoute(window.location.pathname);
+            } else {
+                glossSelectEl.value = "{{ main_gloss.head_gloss_id }}";
+                loadGlossFromRoute(window.location.pathname);
+            }
+        });
+
+        // Updates DOM info when user navigates to page
         window.navigation.addEventListener("navigate", (event) => {
             const url = new URL(event.destination.url);
             loadGlossFromRoute(url.pathname); 
@@ -121,8 +132,3 @@
 
     </script>
 {% endblock %}
-
-<!--
-ADD CHECKING FOR A VALID PATH -> id gotta be in select values
-CONVENTION -> avoid putting element in the name, go off of intent -> navigateToGloss
--->

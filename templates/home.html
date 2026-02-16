@@ -3,29 +3,34 @@
 {% block content %}
     <h1>Welcome {% if not user %}Visitor{% endif %}{{ user.username }}</h1>
 
-    <form action="" method="POST">
-        <label for="gloss-search">Search for ASL word: </label>
-        <div class="search-container">
-            <input id="gloss-search" name="search" type="text" placeholder="Search for ASL word">
-            <ul class="search-suggestions" id="typing-suggestions">
-                <!-- autocomplete list -->
-            </ul>
-        </div>
-    </form>
+    <div id="search-div">
+        <form action="" method="POST">
+            <label for="gloss-search">Search for ASL word: </label>
+            <div class="search-container">
+                <input id="gloss-search" name="search" type="text" placeholder="Search for ASL word">
+                <ul class="search-suggestions" id="typing-suggestions">
+                    <!-- autocomplete list -->
+                </ul>
+            </div>
+        </form>
+    </div>
 
-    <h1>Explore More</h1>
-    <div class="grid">
+    <h2>Explore More</h2>
+    <div class="explore-more">
         {% for (main_gloss, head_gloss) in random_word_tuples %}
             <div>
                 <ul>
                     <li>
-                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=head_gloss._id) }}">{{ main_gloss.main_gloss }}</a>
+                        {% set term = main_gloss.main_gloss|lower %}
+                        {% set term = term | replace("/", "/<wbr>") | safe %}
+                    </set>
+                        <a href="{{ url_for('vocab', main_gloss_id=main_gloss._id, gloss_id=head_gloss._id) }}">{{ term }}</a>
                     </li>
                 </ul>
             </div>
         {% endfor %}
     </div>
-    <div class="grid">
+    <div class="video-container">
         {% for (main_gloss, head_gloss) in random_vid_tuples %}
             {% set main_gloss = main_gloss %}
             {% set head_gloss = head_gloss %}
@@ -33,47 +38,52 @@
         {% endfor %}
     </div>
 
-<script>
-    const searchBarEl = document.getElementById("gloss-search");
-    const suggestionsUL = document.getElementById("typing-suggestions");
-    let timeout;
+    <script>
+        const searchBarEl = document.getElementById("gloss-search");
+        const suggestionsUL = document.getElementById("typing-suggestions");
+        let timeout;
 
-    searchBarEl.addEventListener("input", () => {
-        clearTimeout(timeout)
+        // Dynamically updates search suggestions while user types in search bar
+        searchBarEl.addEventListener("input", () => {
+            clearTimeout(timeout)
 
-        timeout = setTimeout(() => {
-            let currentSearch = searchBarEl.value;
+            // Delay for a smaller runtime footprint
+            timeout = setTimeout(() => {
+                let currentSearch = searchBarEl.value;
 
-            updateSearchSuggestions(currentSearch);
+                // Inputs suggestions
+                updateSearchSuggestions(currentSearch);
 
-        }, 150);
-    })
+            }, 150);
+        })
 
-    async function updateSearchSuggestions(search) {
+        async function updateSearchSuggestions(search) {
 
-        // Clears prior suggestions
-        suggestionsUL.innerHTML = "";
+            // Clears prior suggestions
+            suggestionsUL.innerHTML = "";
 
-        if (search) {
-            let suggestions = await generateSuggestions(search);
-        
-            for (let i=0; i<suggestions.length; i++) {
-                let suggestion = document.createElement("li")
-                suggestion.innerText = suggestions[i]
-                suggestionsUL.appendChild(suggestion)
+            if (search) {
+                let suggestions = await generateSuggestions(search);
+            
+                // Adds suggestions to the suggestion list
+                for (let i=0; i<suggestions.length; i++) {
+                    let suggestion = document.createElement("li")
+                    suggestion.innerText = suggestions[i]
+                    suggestionsUL.appendChild(suggestion)
+                }
             }
         }
-    }
 
-    async function generateSuggestions(search) {
-        const request = await fetch("/api/search/" + search);
-        const data = await request.json();
-        
-        return data
+        // Gets suggestions from backend
+        async function generateSuggestions(search) {
+            const request = await fetch("/api/search/" + search);
+            const data = await request.json();
 
-    }
+            return data
 
-</script>
+        }
+
+    </script>
 
 {% endblock %}
 

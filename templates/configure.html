@@ -1,27 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Vocab{% endblock %}
 {% block content %}
+
     <h1>{{ gloss.asl_gloss }}</h1>
 
-    <!-- Dropdown list of all flashcard sets 
-     
-    Create new btn w/ check if want that one
-
-    input w/ name
-    front w/ options
-    back w/ options
-    
-    flashcard values
-
-    input w/ term
-    input w/ front (can be set_default)
-    input w/ back (can be set_default)
-    
-    create btn that returns the stuff in a post method
-
-    cancel btn which redirects back to vocab
-    
-    -->
     <!-- Dropdown of all of users sets -->
     <form action="/create/flashcards" method="POST" id="set-card-form">
 
@@ -104,6 +86,7 @@
         <input type="hidden" id="gloss-id" name="gloss-id" value="{{ gloss._id }}">
 
         <button type="submit" id="submit-btn">Create flashcard</button>
+        <button type="reset" id="reset-btn">Reset</button>
 
     </form>
 
@@ -140,6 +123,7 @@
         const form = document.getElementById("set-card-form");
 
         form.addEventListener("submit", (event) => {
+
             let setSides = "";
 
             // Untangle side values
@@ -151,6 +135,15 @@
             if (!setSides && !existingSet) {
                 event.preventDefault(); // stop form submission
                 alert("Please select default sides for set or choose an existing set!");
+            }
+
+            let fc_term = "";
+            fc_term = document.querySelector('input[name="fc-term"]:checked');
+            
+            // Prevents empty term for flashcard
+            if (!fc_term) {
+                event.preventDefault(); // stop form submission
+                alert("Please select a term for the flashcard!");
             }
 
             if (setSides) {
@@ -177,10 +170,3 @@
 
     </script>
 {% endblock %}
-
-<!--
-TODO
-default values for the set cant be matching, nor can the flashcards
-
-maybe refactor so not sep btns
--->

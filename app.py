@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     __tablename__ = "users"
-    _id = db.Column("user_id", db.Integer, primary_key=True) # auto assigns id to each entry
+    _id = db.Column("user_id", db.Integer, primary_key=True) # Auto assigns id to each entry
 
     username = db.Column("username", db.String(100), nullable=False, unique=True)
     flashcard_sets = db.relationship("FlashcardSet", backref="user", cascade="all, delete-orphan")
@@ -163,9 +163,9 @@ def home():
             )
 
     # Gets random main glosses their head glosses for video browsing on homepage
-    random_vid_tuples = get_main_head_tuples()
+    random_vid_tuples = get_main_head_tuples(8)
 
-    random_word_tuples = get_main_head_tuples(25)
+    random_word_tuples = get_main_head_tuples(40)
 
 
     return render_template(
@@ -282,7 +282,7 @@ def search_components(search, limit=20):
     rtype: list() | list(MainGloss)
     """
 
-    #
+    # Includes glosses with "+" or nothing on either side
     search = fr"(^|\+){search}(\+|$)"
 
     return (
@@ -304,7 +304,7 @@ def search_components(search, limit=20):
 @app.route("/vocab/<int:main_gloss_id>/<int:gloss_id>", methods=["POST", "GET"])
 def vocab(main_gloss_id, gloss_id):
     """ 
-    Returns and renders the base for vocab.html 
+    Returns and organizes the needed data for "vocab.html " and renders the template
     
     main_gloss_id: int
     gloss_id: int
@@ -332,13 +332,17 @@ def get_related_glosses(main_gloss):
 
     sim_notes_list = []
 
+    # Finds glosses with the similar notes to head_gloss
     if head_gloss.notes:
         group = head_gloss.notes
+
+        # Separates based on group, (e.g Possessive pronoun; singular; shows who/what owns something --> Possessive pronoun)
         if ";" in head_gloss.notes:
             group = head_gloss.notes.split(";")[0]
 
         sim_notes_list = get_main_gloss_from_notes(search_pattern=f"%{group}%", limit=6)
     
+    # Looks through components to find glosses that use it
     appears_in_list = search_components(search=head_gloss.asl_gloss, limit=12)
 
     return {
@@ -379,7 +383,7 @@ def variant_info(main_gloss_id, gloss_id):
             "non_dom_start": gloss.handshape.non_dom_start,
             "non_dom_end": gloss.handshape.non_dom_end
         },
-        "hs_videos": hs_img_dict
+        "hs_imgs": hs_img_dict
     }
 
 @app.route("/create/configure/flashcards", methods=["POST", "GET"]) 
@@ -471,6 +475,8 @@ def edit_set(set_id):
         if request.form.get("flashcard-del-list"):
             delete_cards(json.loads(request.form.get("flashcard-del-list")))
         
+        return redirect(url_for("sets"))
+        
     return render_template("edit_set.html", fc_set=fc_set)
 
 @app.route("/api/study/<int:set_id>") 
@@ -518,6 +524,15 @@ def flashcard_partial():
 
 @app.route("/api/sets/<int:set_id>")
 def get_set_info(set_id):
+    """
+    Returns info for set object
+
+    Used in "sets.html" to render the dialog preview
+
+    set_id: int
+    rtype: str - JSON string containing set data
+    """
+
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
 
     fc_set_json = {
@@ -531,26 +546,32 @@ def get_set_info(set_id):
 
 @app.route("/api/sets/delete/<int:set_id>")
 def delete_set(set_id):
+    """
+    Deletes the object in the database
+
+    set_id: int
+    rtype: None
+    """
+    # Gets all flashcards with the ids given
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
 
     if fc_set:
         db.session.delete(fc_set)
         db.session.commit()
 
+    return "Flashcards Successfully Deleted"
+
 def delete_cards(card_id_list):
-    print(card_id_list)
     """
     Deletes all the flashcards with the ids in the list
 
-    card_id_list: List(Int)
+    card_id_list: list(int)
     rtype: None
     """
     # Gets flashcards with matching ids and deletes them
     cards = Flashcard.query.filter(Flashcard._id.in_(card_id_list)).delete()
 
     db.session.commit()
-
-    print(Flashcard.query.all())
 
 @app.route("/sets")
 def sets():
@@ -585,6 +606,7 @@ def vocab_list():
     for letter in list(string.ascii_uppercase):
         search_pattern = letter + "%"
 
+        # Gets all glosses that start with/ letter
         gloss_dict_by_letter[letter] = (
             db.session.query(MainGloss)
             .filter(MainGloss.main_gloss.ilike(search_pattern))
@@ -609,6 +631,8 @@ def inject_user():
 def login():
     """
     Renders "login" template and handles account creation and user sign in
+
+    rtype: str - HTML string for "login.html" | Response - redirect to "home"
     """
 
     if request.method == "POST" and request.form["nm"]:

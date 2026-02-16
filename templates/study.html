@@ -23,10 +23,11 @@
 
         const setId = window.location.pathname.split("/").pop();
 
+        // Initializes data for event handlers
         let cardContainer = document.getElementById("card-div");
-
         let [cards, state] = await initCardData(setId, cardContainer)
 
+        // Sets up event listeners
         setupFlashcardActions(cards, cardContainer, document, state)
     </script>
 

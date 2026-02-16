@@ -48,8 +48,10 @@
         const form = document.getElementById("edit-form")
 
         form.addEventListener("submit", (event) => {
+            window.location.href = "{{ url_for('sets') }}";
             const newName = document.getElementById("name-input")
 
+            // Prevents empty name for set
             if (!newName.value) {
                 newName.value = "{{ fc_set.name }}";
             }
@@ -87,7 +89,8 @@
             
             // Updates hidden card value for submission
             document.getElementById("cards-hidden-input").value = JSON.stringify(flashcardDelList);
-        
+
+            window.location.href = "{{ url_for('sets') }}";
         });
     </script>
 
