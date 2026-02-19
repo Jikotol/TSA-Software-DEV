@@ -371,12 +371,14 @@ def variant_info(main_gloss_id, gloss_id):
         else:
             hs_img_dict[key] = None
 
+    video = Video.query.filter_by(gloss_id=gloss._id).first()
+
     # Inserts gloss info into dict for JSON conversion
     return {
         "asl_gloss": gloss.asl_gloss,
         "display_name": gloss.display_name,
-        "youtube_url": gloss.video.youtube_url,
-        "credit": gloss.video.credit,
+        "youtube_url": video.youtube_url if video else None,
+        "credit": video.credit if video else None,
         "handshapes": {
             "dom_start": gloss.handshape.dom_start,
             "dom_end": gloss.handshape.dom_end,
@@ -499,13 +501,17 @@ def card_data(set_id):
     for card in cards:
         gloss = Gloss.query.filter_by(_id=card.gloss_id).first()
 
+        video = Video.query.filter_by(gloss_id=card.gloss_id).first()
+
+        print(video)
+
         cards_json.append({
             "id": card._id,
             "front": card.front if card.front != "default" else fc_set.default_front,
             "back": card.back if card.back != "default" else fc_set.default_back,
             "term": card.term,
-            "visual": gloss.video.youtube_url,
-            "credit": gloss.video.credit
+            "visual": video.youtube_url if video else None,
+            "credit": video.credit if video else None
         })
 
     return json.dumps({
@@ -721,6 +727,8 @@ def clear_table(table):
 
 if __name__ == "__main__":
     with app.app_context():
-        """clear_table(Flashcard)
-        clear_table(FlashcardSet)"""
+
+        clear_table(Flashcard)
+        clear_table(User)
+        clear_table(FlashcardSet)
         app.run(debug=True)

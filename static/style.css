@@ -24,9 +24,19 @@ body {
     color: var(--primary-text-color);
 }
 
-body > nav,
+
 body > div {
     margin-bottom: 50px;
+    align-items: center;
+    justify-content: center;
+}
+
+body > nav {
+    margin-bottom: 50px;
+    align-items: center;
+    justify-content: center;
+    margin: none;
+    margin-right: 50px;
 }
 
 .in-line {
@@ -45,7 +55,9 @@ li {
 
 nav > ul {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 70px;
 }
 
 .grid {
@@ -61,7 +73,6 @@ nav > ul {
     background-color: var(--offset-light-accent-color);
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     padding: 25px;
-    
 
 }
 
@@ -74,7 +85,10 @@ a {
     width: 90%;
     min-width: 200px;
     max-width: 300px;
-    
+    border: 5px; 
+    border-radius: 10px;
+    background-color: var(--flashcard-shadow);
+    padding: 5px
 }
 
 .video-container {
@@ -255,3 +269,11 @@ table, th, td {
 
 }
 
+.logo {
+    display: flex;
+    float: left;
+    max-width: 100%;
+    height: auto;
+    width: 250px;
+    padding: none;
+}
