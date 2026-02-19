@@ -5,7 +5,36 @@
         <iframe src="{{ head_gloss.video.youtube_url }}"></iframe>
         <p>{{ head_gloss.video.credit }} on Youtube</p>
     {% else %}
-        <iframe></iframe>
-        <p>Video not found</p>
+        <iframe srcdoc="
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    p {
+                        font-family: 'Helvetica Neue', Arial, Verdana, sans-serif;
+                        color: rgb(63, 87, 104);
+                        font-size: 13px;
+                    }
+                </style>
+            </head>
+            <body>
+                <p>
+                    Video Not Available<br>
+                    <br>
+                    Hand Shapes:<br>
+                    Dominant-Start - {{ head_gloss.handshape.dom_start }}<br>
+                    Dominant-End - {{ head_gloss.handshape.dom_end }}<br>
+                    {% if head_gloss.handshape.non_dom_start %}
+                        Non-Dominant-Start - {{ head_gloss.handshape.non_dom_start }}<br>
+                    {% endif %}
+                    {% if head_gloss.handshape.non_dom_end %}
+                        Non-Dominant-End - {{ head_gloss.handshape.non_dom_end }}<br>    
+                    {% endif %}
+                </p>
+            </body>
+            </html>
+  
+            "></iframe>
+        <p></p>
     {% endif %}
 </div>

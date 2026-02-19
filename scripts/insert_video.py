@@ -15,6 +15,9 @@ def main():
 
 if __name__ == "__main__":
     video_tuples = []
-    for i in range(1, 4519):
-        video_tuples.append((i, "https://www.youtube.com/embed/y2hbQtiowXo?si=6pn-8OIZACLE8bJ8", "Tom Davenport"))
+    video_tuples.append((2, "https://www.youtube.com/embed/6r8HDsBMk1E?si=bD9IMQ3jHsdK7f9D&amp;start=6;end=7", "AASD Accessible Materials Project"))
+    video_tuples.append((3, "https://www.youtube.com/embed/6r8HDsBMk1E?si=bD9IMQ3jHsdK7f9D&amp;start=6;end=7", "AASD Accessible Materials Project"))
+    video_tuples.append((31, "https://www.youtube.com/embed/6r8HDsBMk1E?si=bD9IMQ3jHsdK7f9D&amp;start=7;end=9", "AASD Accessible Materials Project"))
+    video_tuples.append((39, "https://www.youtube.com/embed/6r8HDsBMk1E?si=bD9IMQ3jHsdK7f9D&amp;start=9;end=11", "AASD Accessible Materials Project"))
+    video_tuples.append((46, "https://www.youtube.com/embed/6r8HDsBMk1E?si=bD9IMQ3jHsdK7f9D&amp;start=11;end=12", "AASD Accessible Materials Project"))
     main()

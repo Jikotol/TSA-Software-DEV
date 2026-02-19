@@ -46,7 +46,11 @@ function createTermEl(card, document) {
 
 function createVisualEl(card, document) {
     let visualEl = document.createElement("iframe");
-    visualEl.src = card["visual"];
+    if (card["visual"]) {
+        visualEl.src = card["visual"]; 
+    } else {
+        visualEl.srcdoc = "Video not available"
+    }
     return visualEl
 }
 

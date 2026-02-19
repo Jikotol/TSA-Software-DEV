@@ -9,7 +9,13 @@
 <body>
     <nav>
         <ul>
-            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li>
+                <a href="{{ url_for('home') }}">
+                    <image class="logo" src="{{ url_for('static', filename='/images/logo_new.png') }}"></image>
+                </a>
+            </li>
+
+                <li><a href="{{ url_for('home') }}">Home</a></li>
             <li><a href="{{ url_for('sets') }}">Study</a></li>
             <li><a href="{{ url_for('vocab_list', letter='A') }}">Vocab List</a></li>
             <li {% if not user %}hidden="hidden"{% endif %}><a href="{{ url_for('logout') }}">Logout</a></li>

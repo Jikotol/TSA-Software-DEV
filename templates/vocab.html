@@ -59,7 +59,12 @@
                 document.getElementById("gloss-header").innerText = data.asl_gloss;
             }
             
-            document.getElementById("gloss-video").src = data.youtube_url;
+            if (data.youtube_url) {
+                document.getElementById("gloss-video").src = data.youtube_url;
+            } else {
+                document.getElementById("gloss-video").srcdoc = "Video Not Available"
+            }
+            
             
             loadHandshapeTable(data.handshapes, data.hs_imgs);
         }
