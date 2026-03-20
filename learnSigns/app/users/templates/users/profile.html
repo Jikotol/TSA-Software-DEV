@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}Profile{% endblock %}
+{% block content %}
+    <p>Hallo</p>
+
+    <button id="logoutBTN">Logout</button>
+
+    <script>
+        const logoutBTN = document.getElementById("logoutBTN");
+
+        logoutBTN.addEventListener("click", () => {
+            window.location.href = "{{ url_for('users.logout') }}";
+        })
+    </script>
+{% endblock %}

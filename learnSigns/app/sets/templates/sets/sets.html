@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Select Flashcard{% endblock %}
+{% block content %}
+
+    <h1 id="set-section-header">Choose Flashcard Set</h1>
+    <ul id="set-cards-ul">
+    {% if fc_sets %}
+        {% for fc_set in fc_sets %}
+            <li class="set-card" data-set-id="{{ fc_set._id }}" name="set-card">{{ fc_set.name }}</div>
+        {% endfor %}
+    {% else %}
+        <p>No Flashcard Sets Found</p>
+        <p>To make a flashcard set, click on a gloss and click the "Create Flashcard" button<p>
+    {% endif %}
+    </ul>
+
+    <!-- Dialog element for previewing set and displaying set info-->
+    {% include "partials/_set-preview.html" %}
+
+    <dialog id="delete-confirmation-msg" class="on-top">
+        <p id="delete-text">Are you sure you want to delete set (set_id)</p>
+        <button id="yes-delete">Yes</button>
+        <button id="no-delete">No</button>
+    </dialog>
+
+    <script type="module">
+        let setId = 0;
+
+        const cardsList = document.getElementById("set-cards-ul")
+
+        let mergeMode = false;
+
+        
+
+        // User clicks the setsx
+        cardsList.addEventListener("click", (event) => {
+
+            // Loads and shows set info
+            if (event.target.tagName === "LI") {
+                if (mergeMode) {
+                    window.location.href = "/sets/merge/" + setId + "/" + event.target.dataset.setId;
+                }
+                setId = event.target.dataset.setId
+                loadPreview(event.target.dataset.setId);
+            }
+        })
+
+        const closeBTN = document.getElementById("close-btn");
+
+        // Closes dialog
+        closeBTN.addEventListener("click", () => {
+            setInfoDialog.close();
+        })
+
+        const reviewBTN = document.getElementById("review-btn");
+
+        // Redirects to "study.html" to study with basic flashcards
+        reviewBTN.addEventListener("click", () => {
+            window.location.href = "/study/review/" + setId;
+        })
+
+        const learnBTN = document.getElementById("learn-btn");
+
+        // Redirects to "study.html" to study with spaced repetition flashcards
+        learnBTN.addEventListener("click", () => {
+            window.location.href = "/study/learn/" + setId;
+        })
+
+        const editBTN = document.getElementById("edit-btn");
+
+        // Redirects to "edit_set.html" to edit set data
+        editBTN.addEventListener("click", () => {
+            window.location.href = "/sets/edit/" + setId;
+        })
+
+        const mergeBTN = document.getElementById("merge-btn");
+
+        // Enables merge mode which allows the user to click a set to merge the current set with
+        mergeBTN.addEventListener("click", () => {
+            enableMergeMode();
+        })
+
+
+        import { initCardData, setupFlashcardActions } from "{{ url_for('display.static', filename='sets.js') }}";
+        const setInfoDialog = document.getElementById("set-info-container");
+
+        async function loadPreview(setId) {
+            const dataRequest = await fetch("/api/sets/" + setId);
+            const previewRequest = await fetch("/api/partials/flashcard")
+
+            const setData = await dataRequest.json();
+            const previewHTML = await previewRequest.text()
+
+            
+            
+
+            document.getElementById("set-preview-div").innerHTML = previewHTML;
+                
+            let nameHeader = document.getElementById("set-name-header")
+
+            let cardContainer = document.getElementById("card-div");
+
+            console.log(cardContainer)
+
+            // Sets up data for set preview
+            let [cards, state] = await initCardData(setId, cardContainer)
+
+            // Adds event listeners to preview
+            setupFlashcardActions(nameHeader, cards, cardContainer, document, state)
+
+            if (cards.length == 1) {
+                document.getElementById("learn-btn").style.display = "none";
+            }
+
+            const deleteSetBTN = document.getElementById("delete-btn")
+            const deleteConfirmationMsg = document.getElementById("delete-confirmation-msg")
+            
+            // Deletes current set
+            deleteSetBTN.onclick = async () => {
+                deleteConfirmationMsg.showModal();
+                await deleteCurrentSet(deleteConfirmationMsg, setData.name)
+
+            };
+
+            setInfoDialog.showModal();
+        
+        }
+
+        const yesBTN = document.getElementById("yes-delete")
+        const noBTN = document.getElementById("no-delete")
+
+
+        async function deleteCurrentSet(deleteConfirmationMsg, setName) {
+
+            // Injects data for delete confirmation message
+            document
+                .getElementById("delete-text")
+                .innerText = "Are you sure you want to delete set " + setName;
+
+
+            yesBTN.addEventListener("click", async () => {
+                await fetch("/api/sets/delete/" + setId);
+                window.location.reload()
+                });
+
+            noBTN.addEventListener("click", () => {
+                deleteConfirmationMsg.close();
+            });
+        }
+
+        const setSectionHeader = document.getElementById("set-section-header");
+
+        function enableMergeMode() {
+            setInfoDialog.close();
+            setSectionHeader.innerText = "Choose Flashcard Set to Merge!"
+            mergeMode = true;
+        }
+        
+    </script>
+
+{% endblock %}

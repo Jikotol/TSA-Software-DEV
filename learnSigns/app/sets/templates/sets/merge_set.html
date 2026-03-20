@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Merge Sets{% endblock %}
+{% block content %}
+
+    
+
+    <!-- REUSE LOGIC FROM SEARCH -->
+    <form action="/create/flashcards" method="POST" id="set-card-form">
+        <div id="select-flashcard-div">
+
+            {{ fc_set1.name }}
+
+            <ul id="ul-flashcards-1">
+                {% for card in fc_set1.cards %}
+                    <li data-card-id={{ card._id }} {% if fc_set1.cards[0] == card %}selected{% endif %}>
+                        {{ card.term }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {{ fc_set2.name }}
+
+            <ul id="ul-flashcards-2">
+                {% for card in fc_set2.cards %}
+                    <li data-card-id={{ card._id }} {% if fc_set2.cards[0] == card %}selected{% endif %}>
+                        {{ card.term }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Displays wanted flashcards -->
+        <div id="kept-cards-div">
+            <ul id="kept-cards-ul">
+                <li>Placeholder</li>
+
+            </ul>
+
+        </div>
+
+        <fieldset id="set-attributes-fieldset">
+            <h4>Flashcard Set Properties</h4>
+            <fieldset id="new-set-attributes">
+                <legend for="set-name-text-input">Set Name</legend>
+                <input type="text" name="set_name" id="set-name-text-input">
+            </fieldset>
+
+            <fieldset>
+                <legend>Default Sides</legend>
+                <input type="radio" value="visual;term" name="set-sides" id="set-front-visual">
+
+                <label for="set-front-visual">Front: visual | Back: term</label>
+                <input type="radio" value="term;visual" name="set-sides" id="set-front-term">
+
+                <label for="set-front-term">Front: term | Back: visual</label>
+                <input type="hidden" name="set-front" id="set-front">
+                <input type="hidden" name="set-back" id="set-back">
+
+            </fieldset>
+        </fieldset>
+
+        <input type="hidden" name="kept-card-list" id="hidden-card-id-list">
+        <input type="hidden" name="set_id-list" value="{{ fc_set1._id }},{{ fc_set2._id }}">
+
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+
+    </form>
+
+    <script>
+
+        // Basiclaly, when a li is selected, we use that and put it in the thing
+
+        const cardsListDiv = document.getElementById("select-flashcard-div");
+        let keptCards = []; // holds lists with the card_name and id respectively
+
+        // User clicks the flashcards
+        cardsListDiv.addEventListener("click", (event) => {
+
+            // Loads and shows set info
+            if (event.target.tagName === "LI") {                
+
+                cardId = event.target.dataset.cardId;
+                keptCards.push([event.target.innerText, cardId]) 
+
+                event.target.style.display = "none";
+
+                syncKeptCardsDiv();
+            }
+        })
+
+        const keptCardsDiv = document.getElementById("kept-cards-div");
+
+        // Syncs the keptCards list values to the div
+        function syncKeptCardsDiv() {
+
+            keptCardsUl = document.getElementById("kept-cards-ul");
+
+            keptCardsUl.innerHTML = "";
+
+            for (let i=0; i<keptCards.length; i++) {
+
+                // Make HTML element for each kept card
+                let cardLi = document.createElement("li");
+
+                cardLi.innerText = keptCards[i][0];
+                cardLi.dataset.cardId = keptCards[i][1];
+
+                // Adds li element to ul element inside the div
+                keptCardsUl.appendChild(cardLi);
+            }
+        }
+
+        keptCardsDiv.addEventListener("click", (event) => {
+
+            // Returns card to cards list and deletes from kept cards
+            if (event.target.tagName === "LI") {
+
+                // Go through the li values in the list and un hide the li elememnt
+                for (const cardUl of cardsListDiv.children) {
+                    for (const cardLi of cardUl.children) {
+                        if (cardLi.dataset.cardId === event.target.dataset.cardId) {
+                            cardLi.style.display = "block";
+                        }
+                    }
+                }
+
+                // get rid of the element in the list and sync it
+                for (let i=0; i<keptCards.length; i++) {
+                    if (keptCards[i][1] == event.target.dataset.cardId) {
+                        keptCards.splice(i, 1);
+                    }
+                }
+                
+                syncKeptCardsDiv();
+
+            } 
+        })
+
+        document.addEventListener("DOMContentLoaded", () => {
+            syncKeptCardsDiv();
+        })
+
+        const form = document.getElementById("set-card-form");
+        const hiddenIdList = document.getElementById("hidden-card-id-list");
+
+        form.addEventListener("submit", (event) => {
+
+            let setSides = document.querySelector("input[name=set-sides]:checked");
+
+            if (!setSides) {
+                event.preventDefault(); // stop form submission
+                alert("Please select default sides!");
+            }
+
+            // Untangle side values and update hidden values
+            setSides = setSides.value.split(";");
+            document.getElementById("set-front").value = setSides[0];
+            document.getElementById("set-back").value = setSides[1];
+
+            if (keptCards.length == 0) {
+                event.preventDefault(); // stop form submission
+                alert("Please select flashcards to put into the new set!");
+            }
+
+            hiddenIdList.value = keptCards.map(function(termIdPair) {
+                return termIdPair[1];
+            });
+
+        })
+
+    </script>
+
+
+{% endblock %}

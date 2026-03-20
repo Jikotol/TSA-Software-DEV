@@ -1,0 +1,23 @@
+TODO:
+    - FIX LOGIN (allows users to make flashcards without signing in)
+    - FIX BUG that happened during presentation demo
+    - ADD hiding the full study mode when the flashcard set is not big enough(size==1)
+    - plan out what happens when user maxes out easiness
+    - Make color animations for hovering and clicking
+    - Make github style progress tracker
+    - Sync up the e-factors to the sql
+    - Put card number on card display
+    - Add alerts!
+    - Add color change when hover over hyperlinks
+    - Add preview to merged sets
+    - Add red color change to hovered cards to delete in merge_sets.html
+    - FIX bug in merge sets that makes it so then all the indexes in keptcards are right.
+    - IF TIME revamp merge/configure thing, should be two separate things
+    - FIX e-fcator thing cuz apparently its wrong
+
+
+print() brings up print window
+
+ensure that the user cant access or make flashcard sets when not signed in
+
+fix bug where the card doesn't flip back to the right side when go to the next one in review mode

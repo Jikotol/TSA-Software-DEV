@@ -1,0 +1,66 @@
+OUTDATED
+
+user/
+
+    Pages
+        - login
+        - logout
+        - profile
+        - flashcard sets
+
+    Other
+        - set preview dialog partial
+        - user settings logic
+        - api creation routes
+
+home/
+
+    Pages
+        - home 
+        - search results
+
+
+    Other
+        - video block partials
+        - search logic
+        - templates
+        - custom css for search bar and video blocks 
+
+vocab/
+
+    Pages
+        - vocab
+        - vocab_list
+
+    Other
+        - custom css
+
+study/
+    // NOTE --> more like linking different components up rather than
+
+    Pages
+        - study
+    
+    Other
+        - Javascript files for weighted flashcard choosing
+
+display
+    // NOTE --> to be used in other blueprints
+ 
+    Pages
+        - n/a
+
+    Other
+        - handshape chart partial
+        - Review box + event handler stuff associated w/ it
+
+create/
+
+    Pages
+        - merge form
+        - edit form
+
+    Other
+        - api calls for changing db
+        - api calls for getting orm objs
+

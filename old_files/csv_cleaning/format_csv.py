@@ -1,4 +1,4 @@
-from learnSigns.backend.data_processing.csv_cleaning.clean_csv import convert, prefixes
+from app.backend.data_processing.csv_cleaning.clean_csv import convert, prefixes
 import pandas as pd
 import re
 

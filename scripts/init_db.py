@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS flashcards (
     front TEXT,
     back TEXT,
     term TEXT,
+    e_factor INTEGER,
     FOREIGN KEY(set_id) REFERENCES flashcard_sets(set_id) ,
     FOREIGN KEY(gloss_id) REFERENCES glosses(gloss_id)
 )
