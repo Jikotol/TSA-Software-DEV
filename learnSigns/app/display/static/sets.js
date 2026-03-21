@@ -26,62 +26,82 @@ export async function initCardData(setId, cardContainer) {
     return [cards, state]
 }
 
-export function setupFlashcardActions(nameHeader, cards, cardContainer, document, state, reviewMode=true) {
-    /* Dynamically creates the event handlers with given data and html */
+export function setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state, reviewMode=true) {
+    /* Dynamically creates the event handlers with given data and html 
+    
+    ADD what the variables mean!!
+    */
 
     nameHeader.innerText = state.setName;
 
     // Flips card
-    cardContainer.addEventListener("click", () => {flipCard(cards, state)});
+    cardContainer.addEventListener("click", () => {
+        flipCard(cards, state)
+    });
+
+    // Goes to next card if a button is clicked
+    cardButtonsDiv.addEventListener("click", (event) => {
+        if (event.target.tagName === "BUTTON") {
+            if (!reviewMode) {
+                selectWeightedCard(cards, state);
+            }
+            loadCard(cards, document, state);
+        }
+    })
 
     if (reviewMode) {
         // Sets event listeners for simple forward and backward flashcard navigation
-        // Goes to the next flashcard
-        document
-            .getElementById("next-btn")
-            .addEventListener("click", () => {nextCard(cards, document, state)});
-                
-        // Goes to the previous flashcard
-        document
-            .getElementById("back-btn")
-            .addEventListener("click", () => {previousCard(cards, document, state)}); 
+        setupNavigationButtons(cards, state)
+        
     } else {
         // Sets event listeners for spaced repetition based flashcard navigation
-
-
-        document
-            .getElementById("easy-btn")
-            .addEventListener("click", () => {
-                updateEasinessFactor(cards[state.index], 3);
-                selectWeightedCard(cards, document, state);
-            });
-        
-        document
-            .getElementById("good-btn")
-            .addEventListener("click", () => {
-                updateEasinessFactor(cards[state.index], 2);
-                selectWeightedCard(cards, document, state);
-            });
-
-        document
-            .getElementById("hard-btn")
-            .addEventListener("click", () => {
-                updateEasinessFactor(cards[state.index], -2);
-                selectWeightedCard(cards, document, state);
-            });
-
-        document
-            .getElementById("wrong-btn")
-            .addEventListener("click", () => {
-                updateEasinessFactor(cards[state.index], -4);
-                selectWeightedCard(cards, document, state);
-            });
+        setupFeedbackButtons(cards[state.index], document)
     }
     
                 
     document.addEventListener("DOMContentLoaded", () => {
         loadCard(cards, document, state);
-        })
+    })
 
     loadCard(cards, document, state);
+    }
+
+function setupFeedbackButtons(card, document) {
+
+    document
+        .getElementById("easy-btn")
+        .addEventListener("click", () => {
+            updateEasinessFactor(card, 3);
+        });
+    
+    document
+        .getElementById("good-btn")
+        .addEventListener("click", () => {
+            updateEasinessFactor(card, 2);
+        });
+
+    document
+        .getElementById("hard-btn")
+        .addEventListener("click", () => {
+            updateEasinessFactor(card, -2);
+        });
+
+    document
+        .getElementById("wrong-btn")
+        .addEventListener("click", () => {
+            updateEasinessFactor(card, -4);
+        });
+    }
+
+
+function setupNavigationButtons(cards, state) {
+    // Goes to the next flashcard
+    document
+        .getElementById("next-btn")
+        .addEventListener("click", () => {nextCard(cards, state)});
+            
+    // Goes to the previous flashcard
+    document
+        .getElementById("back-btn")
+        .addEventListener("click", () => {previousCard(cards, state)}); 
 }

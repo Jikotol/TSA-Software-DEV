@@ -63,30 +63,27 @@ export function flipCard(cards, state) {
     syncSide(cards, state);
 }
 
-export function nextCard(cards, document, state) {
+export function nextCard(cards, state) {
     if (state.index < cards.length-1) {
         state.index += 1;
-        loadCard(cards, document, state);
     }
 }
 
-export function previousCard(cards, document, state) {
+export function previousCard(cards, state) {
     if (state.index > 0) {
         state.index -= 1;
-        loadCard(cards, document, state);
     }
 }
 
 // Update the card the user is on using the probability func
-export function selectWeightedCard(cards, document, state) {
+export function selectWeightedCard(cards, state) {
     let lastCardIndex = state.index;
     
     while (true) {
         let cardIndex = getWeightedCardIndex(cards);
 
         if (cardIndex != lastCardIndex) {
-            state.index = cardIndex
-            loadCard(cards, document, state);
+            state.index = cardIndex;
             return;
         }
     }
@@ -101,6 +98,7 @@ function getWeightedCardIndex(cards) {
 
     console.log(eFactorArray)
 
+    // Adds all the easiness factors up
     const eFactorTotal = eFactorArray.reduce(
         (acc, curr) => acc + curr
     );

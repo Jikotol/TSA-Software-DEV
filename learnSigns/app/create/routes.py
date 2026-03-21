@@ -33,8 +33,6 @@ def create():
     if request.method == "POST":
         path_list = request.referrer.split("/")
 
-        print(session)
-
         # Creates a new set 
         if "new-set" in request.form or "merge" in path_list:
             fc_set = FlashcardSet(

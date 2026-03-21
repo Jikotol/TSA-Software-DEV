@@ -26,11 +26,15 @@
     <script type="module">
         let setId = 0;
 
-        const cardsList = document.getElementById("set-cards-ul")
+        const cardsList = document.getElementById("set-cards-ul");
 
         let mergeMode = false;
-
+        const baseMergeUrl = "{{ url_for('sets.merge_sets', set_id_1=1, set_id_2=2) }}";
         
+        function goToMergePage(setId1, setId2) {
+            const mergeUrl = baseMergeUrl.replace("1", setId1).replace("2", setId2);
+            window.location.href = mergeUrl;
+        }
 
         // User clicks the setsx
         cardsList.addEventListener("click", (event) => {
@@ -38,9 +42,9 @@
             // Loads and shows set info
             if (event.target.tagName === "LI") {
                 if (mergeMode) {
-                    window.location.href = "/sets/merge/" + setId + "/" + event.target.dataset.setId;
+                    goToMergePage(setId, event.target.dataset.setId);
                 }
-                setId = event.target.dataset.setId
+                setId = event.target.dataset.setId;
                 loadPreview(event.target.dataset.setId);
             }
         })
@@ -105,8 +109,10 @@
             // Sets up data for set preview
             let [cards, state] = await initCardData(setId, cardContainer)
 
+            let cardButtonsDiv = document.getElementById("flashcard-actions");
+
             // Adds event listeners to preview
-            setupFlashcardActions(nameHeader, cards, cardContainer, document, state)
+            setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state)
 
             if (cards.length == 1) {
                 document.getElementById("learn-btn").style.display = "none";

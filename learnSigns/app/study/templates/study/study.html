@@ -10,6 +10,8 @@
     {% include "partials/_flashcard-full.html" %}
     {% endif %}
 
+    
+
     <!-- Links JS file for DOM manipulation -->
     
     <script type="module">
@@ -23,10 +25,15 @@
         let cardContainer = document.getElementById("card-div");
         let [cards, state] = await initCardData(setId, cardContainer)
 
+        console.log([cards, state])
+
         let nameHeader = document.getElementById("name-header");
 
+        let cardButtonsDiv = document.getElementById("flashcard-actions");
         // Sets up event listeners
-        setupFlashcardActions(nameHeader, cards, cardContainer, document, state, reviewMode)
+        setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state, reviewMode)
+
+        let finish = false;
 
     </script>
 
