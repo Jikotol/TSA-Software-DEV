@@ -1,11 +1,11 @@
-<h1 id="name-header"></h1>
-<div id="flashcard-div" class="study-container">
-    <div id="card-div" class="flashcard">Holds card visual or term</div>
-</div>
-<div id="flashcard-actions" class="flashcard-actions">
-    <button id="back-btn"><--</button>
-    <button id="next-btn">--></button>
-</div>
+{% extends "_flashcard-base.html" %}
 
+{block flashcard_actions }
+<div id="flashcard-actions" class="flashcard-actions">
+    <button id="back-button"><--</button>
+    <button id="flashcard-number">NUMBER OF CURRENT FLASHCARD</button>
+    <button id="next-button">--></button>
+</div>
+{ endblock }
 
 

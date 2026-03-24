@@ -2,15 +2,17 @@
 Contains functions for making the HTML
 */
 
+import { MAX_E_FACTOR } from "../../static/utils/constants.js";
+
 // Updates new data to state when card changes and syncs changes
-export function loadCard(cards, document, state) {
+export function loadCard(cards, state) {
     let card = cards[state.index];
 
     clearFlashcard(state.cardContainer);
     state.side = "front";
     
-    state.termEl = createTermEl(card, document);
-    state.visualEl = createVisualEl(card, document);
+    state.termEl = createTermEl(card);
+    state.visualEl = createVisualEl(card);
 
     // Update DOM
     syncSide(cards, state)
@@ -36,13 +38,13 @@ function syncSide(cards, state) {
     }
 }
 
-function createTermEl(card, document) {
+function createTermEl(card) {
     let termEl = document.createElement("h1");
     termEl.innerText = card["term"];
     return termEl
 }
 
-function createVisualEl(card, document) {
+function createVisualEl(card) {
     let visualEl = document.createElement("iframe");
     if (card["visual"]) {
         visualEl.src = card["visual"]; 
@@ -79,6 +81,10 @@ export function previousCard(cards, state) {
 export function selectWeightedCard(cards, state) {
     let lastCardIndex = state.index;
     
+    if (cards.length == 2) {
+        state.index = Math.abs(state.index - 1);
+        return;
+    }
     while (true) {
         let cardIndex = getWeightedCardIndex(cards);
 
@@ -91,25 +97,22 @@ export function selectWeightedCard(cards, state) {
 }
 
 function getWeightedCardIndex(cards) {
-    // Gets card based on all cards' easiness factors
-    const eFactorArray = cards.map((card) => {
-        return card.eFactor;
-    })
-
-    console.log(eFactorArray)
+    // Gets card based on all cards' easiness factors and puts the values in an array
+    const eFactorArray = getAllEFactors(cards);
 
     // Adds all the easiness factors up
-    const eFactorTotal = eFactorArray.reduce(
-        (acc, curr) => acc + curr
-    );
+    const eFactorTotal = addArrayNumbers(eFactorArray);
 
     const randomNum = Math.random() * eFactorTotal;
     let upto = 0;
 
     for (let i=0; i<cards.length; i++) {
         upto += eFactorArray[i];
-        if (upto > randomNum) {
+
+        if (upto < randomNum) {
             return i;
+        } else if (upto == 0 && randomNum == 0) {
+            break;
         }
     }
 
@@ -119,8 +122,8 @@ function getWeightedCardIndex(cards) {
 
 // Updates easiness factors based on the users response 
 export function updateEasinessFactor(card, amount) {
-    if (card.eFactor + amount > 20) {
-        card.eFactor = 20
+    if (card.eFactor + amount > MAX_E_FACTOR) {
+        card.eFactor = MAX_E_FACTOR
     } else if (card.eFactor + amount < 0) {
         card.eFactor = 0
     } else {
@@ -130,4 +133,20 @@ export function updateEasinessFactor(card, amount) {
 
 function clearFlashcard(flashcardDiv) {
     flashcardDiv.innerHTML = "";
+}
+
+export function addArrayNumbers(array) {
+    const total = array.reduce(
+        (acc, curr) => acc + curr
+    );
+
+    return total;
+}
+
+export function getAllEFactors(cards) {
+    const eFactorArray = cards.map((card) => {
+        return card.eFactor;
+    })
+    
+    return eFactorArray
 }

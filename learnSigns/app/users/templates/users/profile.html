@@ -3,12 +3,12 @@
 {% block content %}
     <p>Hallo</p>
 
-    <button id="logoutBTN">Logout</button>
+    <button id="logout-button">Logout</button>
 
     <script>
-        const logoutBTN = document.getElementById("logoutBTN");
+        const logoutButton = document.getElementById("logout-button");
 
-        logoutBTN.addEventListener("click", () => {
+        logoutButton.addEventListener("click", () => {
             window.location.href = "{{ url_for('users.logout') }}";
         })
     </script>

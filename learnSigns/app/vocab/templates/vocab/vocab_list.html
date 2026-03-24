@@ -15,9 +15,9 @@
         
 
     <script>
-        letterBtnDiv = document.getElementById("button-container");
+        letterButtonDiv = document.getElementById("button-container");
 
-        letterBtnDiv.addEventListener("click", (event) => {
+        letterButtonDiv.addEventListener("click", (event) => {
             if (event.target.tagName === "BUTTON") {
                 letter = event.target.value
 
@@ -54,6 +54,16 @@
                 glossListEl.appendChild(glossItem);
                 
             })
+        }
+
+        function getAnchorElement(document, liElement) {
+            const glossRef= document.createElement("a");
+
+            glossRef.innerText = gloss[2] // MainGloss.main_gloss
+
+            glossRef.href = window.location.origin + `/vocab/${gloss[0]}/${gloss[1]}`
+
+            return
         }
             
     </script>

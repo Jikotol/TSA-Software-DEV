@@ -49,38 +49,38 @@
             }
         })
 
-        const closeBTN = document.getElementById("close-btn");
+        const closeButton = document.getElementById("close-button");
 
         // Closes dialog
-        closeBTN.addEventListener("click", () => {
+        closeButton.addEventListener("click", () => {
             setInfoDialog.close();
         })
 
-        const reviewBTN = document.getElementById("review-btn");
+        const reviewButton = document.getElementById("review-button");
 
         // Redirects to "study.html" to study with basic flashcards
-        reviewBTN.addEventListener("click", () => {
+        reviewButton.addEventListener("click", () => {
             window.location.href = "/study/review/" + setId;
         })
 
-        const learnBTN = document.getElementById("learn-btn");
+        const learnButton = document.getElementById("learn-button");
 
         // Redirects to "study.html" to study with spaced repetition flashcards
-        learnBTN.addEventListener("click", () => {
+        learnButton.addEventListener("click", () => {
             window.location.href = "/study/learn/" + setId;
         })
 
-        const editBTN = document.getElementById("edit-btn");
+        const editButton = document.getElementById("edit-button");
 
         // Redirects to "edit_set.html" to edit set data
-        editBTN.addEventListener("click", () => {
+        editButton.addEventListener("click", () => {
             window.location.href = "/sets/edit/" + setId;
         })
 
-        const mergeBTN = document.getElementById("merge-btn");
+        const mergeButton = document.getElementById("merge-button");
 
         // Enables merge mode which allows the user to click a set to merge the current set with
-        mergeBTN.addEventListener("click", () => {
+        mergeButton.addEventListener("click", () => {
             enableMergeMode();
         })
 
@@ -115,14 +115,14 @@
             setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state)
 
             if (cards.length == 1) {
-                document.getElementById("learn-btn").style.display = "none";
+                document.getElementById("learn-button").style.display = "none";
             }
 
-            const deleteSetBTN = document.getElementById("delete-btn")
+            const deleteSetButton = document.getElementById("delete-button")
             const deleteConfirmationMsg = document.getElementById("delete-confirmation-msg")
             
             // Deletes current set
-            deleteSetBTN.onclick = async () => {
+            deleteSetButton.onclick = async () => {
                 deleteConfirmationMsg.showModal();
                 await deleteCurrentSet(deleteConfirmationMsg, setData.name)
 
@@ -132,8 +132,8 @@
         
         }
 
-        const yesBTN = document.getElementById("yes-delete")
-        const noBTN = document.getElementById("no-delete")
+        const yesButton = document.getElementById("yes-delete")
+        const noButton = document.getElementById("no-delete")
 
 
         async function deleteCurrentSet(deleteConfirmationMsg, setName) {
@@ -144,12 +144,12 @@
                 .innerText = "Are you sure you want to delete set " + setName;
 
 
-            yesBTN.addEventListener("click", async () => {
+            yesButton.addEventListener("click", async () => {
                 await fetch("/api/sets/delete/" + setId);
                 window.location.reload()
                 });
 
-            noBTN.addEventListener("click", () => {
+            noButton.addEventListener("click", () => {
                 deleteConfirmationMsg.close();
             });
         }

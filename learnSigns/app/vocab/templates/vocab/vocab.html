@@ -5,7 +5,7 @@
     <h1>{{ main_gloss.main_gloss }}</h1>
     <div id="vocab-container" class="vocab-container">
         <form action="/create/configure/flashcards" method="POST">
-            <button class="special-btns" type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
+            <button class="special-buttons" type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
             <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
                 {% for g in main_gloss.glosses %}
                     <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>

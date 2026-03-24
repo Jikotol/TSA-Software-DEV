@@ -1,0 +1,1 @@
+export const MAX_E_FACTOR = 20;

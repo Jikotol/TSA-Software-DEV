@@ -1,18 +1,11 @@
-{% block title %}Study{% endblock %}
-{% block content %}
+{% block title %}Review{% endblock %}
 
-    <button id="pause-button">Pause session</button>
+{% include "partials/_flashcard.html" %}
 
-    <!-- Gets flashcard partial including card and buttons -->
 
-    <!-- Links JS file for DOM manipulation -->
-    
     <script type="module">
 
         import { initCardData, setupFlashcardActions } from "{{ url_for('display.static', filename='sets.js') }}";
-        import { setupFinishDialog } from "{{ url_for('study.static', filename='finishDialog.js' )}}";
-        import { setupPauseDialog } from "{{ url_for('study.static', filename='pauseDialog.js' )}}";
-        import { initSessionState } from "{{ url_for('study.static', filename='dialogUtils.js' )}}";
 
         const setId = window.location.pathname.split("/").pop();
 
@@ -24,6 +17,7 @@
 
         let cardButtonsDiv = document.getElementById("flashcard-actions");
         // Sets up event listeners
+        setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state, reviewMode)
         setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state, reviewMode)
 
         let finish = false;

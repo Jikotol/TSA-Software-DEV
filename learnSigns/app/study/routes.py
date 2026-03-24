@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-study_bp = Blueprint("study", __name__, url_prefix="/study", template_folder="templates")
+study_bp = Blueprint("study", __name__, url_prefix="/study", template_folder="templates", static_folder="static", static_url_path="/study/static")
 
 @study_bp.route("/<string:mode>/<int:set_id>") 
 def study(set_id, mode):

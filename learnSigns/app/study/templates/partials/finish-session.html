@@ -1,0 +1,26 @@
+<dialog id="finish-event-dialog">
+    <div id="finish-details-div">
+        <h1 id="finish-header">SET NAME FINISHED</h1>
+        <h3 id="final-time-elapsed-header">#:##</h3>
+        <h3 id="total-learned-header">NUMBER</h3>
+    </div>
+    <div id="finish-navigation-div">
+        <button id="reset-learning-button">Reset Learning Progress</button>
+        <button id="review-mode-button">Review Mode</button>
+        <button id="return-to-sets-button">Return to sets</button>
+        <button id="quiz-button">Quiz</button>
+    </div>
+
+    <div id="terms-learned-list-div">
+        <h2 id="terms-list-header">Terms Learned:</h2>
+        <ul id="terms-learned-ul"></ul>
+    </div>
+</dialog>
+
+<!-- Shows when user wants to reset progress -->
+<dialog id="reset-progress-dialog">
+    <h1>Are you sure?</h1>
+    <h3>This action is irreversible</h3>
+    <button id="yes-reset-button">Yes</button>
+    <button id="no-reset-button">No</button>
+</dialog>

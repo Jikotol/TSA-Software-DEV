@@ -158,7 +158,7 @@ dialog[open] > button {
     margin: 5px;
 }
 
-dialog[open] > #close-btn {
+dialog[open] > #close-button {
     flex-direction: row;
 }
 
@@ -182,7 +182,7 @@ dialog {
 
 }
 
-.special-btns {
+.special-buttons {
     background-color: var(--complementary-color);
     color: var(--primary-color);
     border-radius: 15px;
