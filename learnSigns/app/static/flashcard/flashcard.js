@@ -2,7 +2,7 @@
 Contains functions for making the HTML
 */
 
-import { MAX_E_FACTOR } from "../../static/utils/constants.js";
+import { MAX_E_FACTOR } from "../utils/constants.js";
 
 // Updates new data to state when card changes and syncs changes
 export function loadCard(cards, state) {

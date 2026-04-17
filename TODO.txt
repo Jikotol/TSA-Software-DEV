@@ -14,6 +14,13 @@ TODO:
     - FIX bug in merge sets that makes it so then all the indexes in keptcards are right.
     - IF TIME revamp merge/configure thing, should be two separate things
     - FIX e-fcator thing cuz apparently its wrong
+    - double check button html ids(screwed around with find function)
+
+POLISHING
+    - DELETE event listeners before adding new ones(for da safety)
+
+LEARN BEFORE NATIONALS:
+    - Understand how the weighted flashcard system works
 
 
 print() brings up print window

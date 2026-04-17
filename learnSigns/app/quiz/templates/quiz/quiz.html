@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% includes "_select-correct.html" %}
+
+{% block content %}
+
+    <button type="radio" name="user_answer">A</button>
+    <button type="radio" name="user_answer">B</button>
+    <button type="radio" name="user_answer">C</button>
+    <button type="radio" name="user_answer">D</button>
+
+    <script>
+        injectSelectCorrect
+    </script>
+
+{% endblock %}

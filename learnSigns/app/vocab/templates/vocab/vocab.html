@@ -16,7 +16,7 @@
         </form>
 
         <h2 id="gloss-header" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %} >GLOSS-HEADER-PLACEHOLDER</h2>
-        <iframe id="gloss-video">GLOSS VIDEO</iframe>
+        <iframe id="gloss-video-iframe">GLOSS VIDEO</iframe>
         <div id="handshape-table"></div>
 
         <div id="related-glosses-div">
@@ -43,35 +43,55 @@
         </div>
     </div>
 
+
+
+
     <script>
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
-        const HS_LIST = ["dom_start", "dom_end", "non_dom_start", "non_dom_end"];
+        const HAND_SHAPE_LIST = ["dom_start", "dom_end", "non_dom_start", "non_dom_end"];
 
         // Get the gloss selected with the gloss_id in URL
         async function loadGlossFromRoute(pathname) {
 
             const request = await fetch("/api" + pathname);
-            const data = await request.json();
+            const glossData = await request.json();
 
-            if (data.display_name) {
-                document.getElementById("gloss-header").innerText = data.display_name;
+            updateGlossHeader(glossData)
+            updateGlossVideo(glossData)
+            
+            loadHandshapeTable(glossData.handshapes, glossData.hs_imgs);
+        }
+
+        const glossHeader = document.getElementById("gloss-header");
+
+        function updateGlossHeader(glossData) {
+            if (glossData.display_name) {
+                glossHeader.innerText = glossData.display_name;
             } else {
-                document.getElementById("gloss-header").innerText = data.asl_gloss;
+                glossHeader.innerText = glossData.asl_gloss;
             }
-            
-            if (data.youtube_url) {
-                document.getElementById("gloss-video").src = data.youtube_url;
+        }
+
+        const glossVideoEl = document.getElementById("gloss-video-iframe");
+        
+        function updateGlossVideo(glossData) {
+            if (glossData.youtube_url) {
+                glossVideoEl.src = glossData.youtube_url;
             } else {
-                document.getElementById("gloss-video").srcdoc = "Video Not Available"
+                glossVideoEl.srcdoc = "Video Not Available"
             }
-            
-            
-            loadHandshapeTable(data.handshapes, data.hs_imgs);
         }
 
         // Gets a handshape table and inserts data
         async function loadHandshapeTable(handshapeData, handshapeImgs) {
+            // Gets html elements of the hand shape table contained in a doc 
+            const doc = await getHandshapeTableDoc();
 
+            injectHandshapeData(handshapeData, handshapeImgs, doc);
+            updateHandshapeTable(doc);
+        }
+
+        async function getHandshapeTableDoc() {
             const response = await fetch("{{ url_for('display.static', filename='handshapes-table.html') }}");
             const htmlString = await response.text();
 
@@ -80,35 +100,44 @@
             // Creates HTML elements from html string
             const doc = parser.parseFromString(htmlString, 'text/html');
 
-            // Injects each handshape in to the table
-            for (var i=0;i<4;i++) {
+            return doc;
+        }
+
+        function injectHandshapeData(handshapeData, handshapeImgs, doc) {
+            for (const handshape of HAND_SHAPE_LIST) {
+                console.log(handshape)
                 var p = document.createElement("p");
                 var hs_img = document.createElement("img");
 
                 // Inserts the handshape label
-                p.innerText = handshapeData[HS_LIST[i]];
+                p.innerText = handshapeData[handshape];
 
                 // Inserts video
-                if (handshapeImgs[HS_LIST[i]]) {
-                    hs_img.setAttribute("src", handshapeImgs[HS_LIST[i]]);
+                if (handshapeImgs[handshape]) {
+                    hs_img.setAttribute("src", handshapeImgs[handshape]);
                 }
                 
-                if (handshapeData[HS_LIST[i]]) {
+                if (handshapeData[handshape]) {
 
-                    // Gets the elements from the parsed handshape table
-                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(p);
-                    if (handshapeImgs[HS_LIST[i]]) {
-                    doc.getElementsByClassName(HS_LIST[i].replaceAll("_", "-"))[0].appendChild(hs_img);
+                    // Gets the td element from the parsed handshape table
+                    tableSection = doc.getElementsByClassName(handshape.replaceAll("_", "-"))[0]
+
+                    tableSection.appendChild(p);
+
+                    if (handshapeImgs[handshape]) {
+                        tableSection.appendChild(hs_img);
                     }
                 }
             }
+        }
+
+        function updateHandshapeTable(doc) {
+
             const handshapeTableEl = document.getElementById("handshape-table");
 
-            // Adds the paragraph and image element to body
+            // Adds the handshape paragraph and image element to table
             handshapeTableEl.innerHTML = "";
-            for (var i=0; i<doc.body.childNodes.length; i++) {
-                handshapeTableEl.appendChild(doc.body.childNodes[i]);
-            }
+            handshapeTableEl.append(...doc.body.childNodes);
         }
 
         // Changes the URL to change the variant gloss showed
@@ -139,6 +168,8 @@
             const url = new URL(event.destination.url);
             loadGlossFromRoute(url.pathname); 
         });
+
+        
 
     </script>
 {% endblock %}

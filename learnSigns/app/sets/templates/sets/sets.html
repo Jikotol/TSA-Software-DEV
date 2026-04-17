@@ -85,7 +85,12 @@
         })
 
 
-        import { initCardData, setupFlashcardActions } from "{{ url_for('display.static', filename='sets.js') }}";
+        // Imports all flashcard data and sets up state
+        import { initCardData } from "{{ url_for('static', filename='flashcard/flashcardUtils.js') }}";
+        
+        // Imports JS for flashcard functionality elements
+        import { setupReviewActions } from "{{ url_for('display.static', filename='review.js') }}";
+
         const setInfoDialog = document.getElementById("set-info-container");
 
         async function loadPreview(setId) {
@@ -95,24 +100,14 @@
             const setData = await dataRequest.json();
             const previewHTML = await previewRequest.text()
 
-            
-            
-
             document.getElementById("set-preview-div").innerHTML = previewHTML;
-                
-            let nameHeader = document.getElementById("set-name-header")
 
-            let cardContainer = document.getElementById("card-div");
+            // Initializes data for event handlers
+            const cardContainer = document.getElementById("card-div");
+            const [cards, cardState] = await initCardData(setId, cardContainer);
 
-            console.log(cardContainer)
-
-            // Sets up data for set preview
-            let [cards, state] = await initCardData(setId, cardContainer)
-
-            let cardButtonsDiv = document.getElementById("flashcard-actions");
-
-            // Adds event listeners to preview
-            setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, document, state)
+            // Sets up event listeners
+            setupReviewActions(cards, cardState);
 
             if (cards.length == 1) {
                 document.getElementById("learn-button").style.display = "none";

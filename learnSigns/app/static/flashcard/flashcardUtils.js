@@ -2,7 +2,7 @@
 Handles event handling and calling the functions
 */
 
-import { loadCard, flipCard, nextCard, previousCard, updateEasinessFactor, selectWeightedCard } from "../../display/static/flashcard.js"
+import { loadCard, flipCard } from "./flashcard.js"
 
 export async function initCardData(setId, cardContainer) {
 
@@ -40,7 +40,7 @@ export function getCardStructureElements() {
 export function setupFlashcard(elements, cards, cardState) {
     const { nameHeader, cardContainer } = elements;
 
-    nameHeader.innerText = state.setName;
+    nameHeader.innerText = cardState.setName;
 
     // Flips card
     cardContainer.addEventListener("click", () => {
@@ -51,22 +51,3 @@ export function setupFlashcard(elements, cards, cardState) {
         loadCard(cards, cardState);
     })
 }
-
-
-
-export function setupFlashcardActions(nameHeader, cards, cardContainer, cardButtonsDiv, state, reviewMode=true) {
-    /* Dynamically creates the event handlers with given data and html 
-    
-    ADD what the variables mean!!
-    */
-
-    
-
-    // Goes to next card if a button is clicked
-    cardButtonsDiv.addEventListener("click", (event) => {
-        if (event.target.tagName === "BUTTON") {
-            selectWeightedCard(cards, state);
-            loadCard(cards, cardState);
-        }
-    });
-

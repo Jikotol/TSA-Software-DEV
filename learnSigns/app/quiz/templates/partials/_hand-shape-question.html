@@ -1,0 +1,12 @@
+<div id="options-display-div">
+    
+
+    {% set letter_options = ["A", "B", "C", "D"] %}
+    {% for letter in letter_options %}
+        <div>
+            <h1 id="letter-header">{{ letter }}</h1>
+            <div id={{ letter | lower }}></div>
+        </div>
+    {% endfor %}
+
+</div>

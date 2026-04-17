@@ -17,7 +17,7 @@ export function setupPauseDialog(pauseButton, sessionState) {
     })
 
     const pauseNavigationDiv = pauseDialog.querySelector("#pause-navigation-div");
-    setupNavigationButtons(pauseDialog, pauseNavigationDiv);
+    setupNavigationButtons(pauseDialog, pauseNavigationDiv, sessionState);
 
 }
 
@@ -38,14 +38,14 @@ function getPercentLearned(cards) {
     return floatToPercent((learnedCards.length / totalCardsNum));
 }
 
-function setupNavigationButtons(pauseDialog, pauseNavigationDiv) {
+function setupNavigationButtons(pauseDialog, pauseNavigationDiv, sessionState) {
     const cancelButton = pauseNavigationDiv.querySelector("#cancel-navigation-button");
     cancelButton.addEventListener("click", () => {
         pauseDialog.close()
     })
 
     const reviewModeButton = pauseNavigationDiv.querySelector("#review-mode-button");
-    initReviewModeButton(reviewModeButton);
+    initReviewModeButton(reviewModeButton, sessionState);
 
     const returnToSetsButton = pauseNavigationDiv.querySelector("#return-to-sets-button");
     initReturnToSetsButton(returnToSetsButton);

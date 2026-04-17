@@ -70,7 +70,7 @@ def add_flashcard_to_json():
 
 # determine how its formatted(front, back, etc) in function parameters
 # Sep func for one func, This not for converting all glosses
-# later link to onevent func linked to btn
+# later link to onevent func linked to button
 # later create new file for each user
 """
 set = dict()

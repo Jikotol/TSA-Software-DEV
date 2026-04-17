@@ -1,5 +1,5 @@
-import { loadCard, nextCard, previousCard } from "./flashcard.js"
-import ()
+import { loadCard, nextCard, previousCard } from "/static/flashcard/flashcard.js";
+import { getCardStructureElements, setupFlashcard } from "/static/flashcard/flashcardUtils.js";
 
 export function setupReviewActions(cards, cardState) {
     const elements = getAllReviewElements();
@@ -9,20 +9,30 @@ export function setupReviewActions(cards, cardState) {
     setupFlashcard(elements, cards, cardState)
 
     setupFlashcardSync(elements, cards, cardState);
+
+    // Update elements with first card
+    updateFlashcardNumber(elements, cardState)
+    loadCard(cards, cardState);
 }
 
 function setupFlashcardSync(elements, cards, cardState) {
-    const { cardButtonsDiv, flashcardNumberDisplay } = elements;
+    const { cardButtonsDiv } = elements;
 
     cardButtonsDiv.addEventListener("click", (event) => {
         if (event.target.tagName === "BUTTON") {
             // Updates flashcard number
-            flashcardNumberDisplay.innerText = cardState
+           updateFlashcardNumber(elements, cardState)
             
             // Syncs changes
             loadCard(cards, cardState);
         }
     })
+}
+
+function updateFlashcardNumber(elements, cardState) {
+    const { flashcardNumberDisplay } = elements;
+
+    flashcardNumberDisplay.innerText = cardState.index + 1;
 }
 
 function setupNavigationButtons(elements, cards, cardState) {

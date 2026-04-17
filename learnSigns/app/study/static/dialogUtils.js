@@ -1,4 +1,4 @@
-import { addArrayNumbers, getAllEFactors } from "/display/static/flashcard.js";
+import { addArrayNumbers, getAllEFactors } from "/static/flashcard/flashcard.js";
 
 function returnToSets() {
     window.location.href = "/sets/"

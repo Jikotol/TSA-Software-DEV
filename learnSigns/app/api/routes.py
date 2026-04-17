@@ -83,6 +83,7 @@ def get_letter_glosses(letter):
 
 @api_bp.route("/partials/flashcard")
 def flashcard_partial():
+    print("H")
     """ 
     Contains the HTML for flipping and going through flashcards 
     

@@ -1,7 +1,7 @@
-import { loadCard, updateEasinessFactor, selectWeightedCard } from "display/static/flashcard.js"
-import ()
+import { loadCard, updateEasinessFactor, selectWeightedCard } from "/static/flashcard/flashcard.js";
+import { getCardStructureElements, setupFlashcard } from "/static/flashcard/flashcardUtils.js";
 
-export function setupReviewActions(cards, cardState) {
+export function setupLearnActions(cards, cardState) {
     const elements = getAllLearnElements();
     
     setupFeedbackButtons(elements, cards, cardState)
@@ -9,6 +9,8 @@ export function setupReviewActions(cards, cardState) {
     setupFlashcard(elements, cards, cardState)
 
     setupFlashcardUpdate(elements, cards, cardState)
+
+    loadCard(cards, cardState);
 }
 
 function setupFlashcardUpdate(elements, cards, cardState) {
@@ -44,18 +46,18 @@ function setupFeedbackButtons(elements, cards, cardState) {
     const { easyButton, goodButton, hardButton, wrongButton } = elements;
 
     easyButton.addEventListener("click", () => {
-            updateEasinessFactor(cards[state.index], 3);
+            updateEasinessFactor(cards[cardState.index], 3);
         });
     
     goodButton.addEventListener("click", () => {
-            updateEasinessFactor(cards[state.index], 2);
+            updateEasinessFactor(cards[cardState.index], 2);
         });
 
     hardButton.addEventListener("click", () => {
-            updateEasinessFactor(cards[state.index], -2);
+            updateEasinessFactor(cards[cardState.index], -2);
         });
 
     wrongButton.addEventListener("click", () => {
-            updateEasinessFactor(cards[state.index], -4);
+            updateEasinessFactor(cards[cardState.index], -4);
         });
     }

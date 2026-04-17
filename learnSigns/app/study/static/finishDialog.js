@@ -2,7 +2,7 @@
 
 import { MAX_E_FACTOR } from "/static/utils/constants.js";
 import { initReturnToSetsButton, initReviewModeButton, formatElapsedTime } from "./dialogUtils.js";
-import { addArrayNumbers, getAllEFactors } from "/display/static/flashcard.js";
+import { addArrayNumbers, getAllEFactors } from "/static/flashcard/flashcard.js";
 
 export function setupFinishDialog(document, cardButtonsDiv, sessionState) {
 
@@ -19,7 +19,7 @@ export function setupFinishDialog(document, cardButtonsDiv, sessionState) {
 }
 
 function setupFinishDialogToggle(elements, sessionState) {
-    const { timeHeader, termsLearnedDiv, document, finishDialog } = elements;
+    const { timeHeader, finishDialog } = elements;
 
     finishDialog.addEventListener('toggle', (event) => {
         if (finishDialog.open) {

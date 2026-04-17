@@ -11,6 +11,6 @@ def study(set_id, mode):
     rtype: str - HTML string for "study.html"
     """
     if mode == "review":
-        return render_template("study/study.html", review=True)
+        return render_template("study/review.html", review=True)
     else:
-        return render_template("study/study.html")
+        return render_template("study/learn.html")
