@@ -2,7 +2,7 @@
 A website built for TSA's 2025-2026 software development competition. Made to remove barriers in learning ASL with a personalized and easy-to-use, website. Designed for people with hearing impairments, but also to spread awareness and increase accessibility.
 
 ## :pencil2: Description
-LearnSigns is a website to help users, from beginner to advanced. 
+LearnSigns is a website to help users learn ASL, from beginner to advanced. 
 
 ## :white_check_mark: Functional Features
   - **Vocab List** with linked videos(in the future), terms, and handshapes
