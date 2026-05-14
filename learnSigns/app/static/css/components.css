@@ -1,0 +1,126 @@
+button {
+    background-color: var(--light-accent-color);
+    color: var(--offset-primary-color);
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 0;
+}
+
+.special-buttons {
+    background-color: var(--complementary-color);
+    color: var(--primary-color);
+    border-radius: 15px;
+    font-size: 16px;
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.logo {
+    display: flex;
+    float: left;
+    max-width: 100%;
+    height: auto;
+    width: 250px;
+    padding: none;
+}
+
+.flashcard {
+    display: grid;
+    place-items: center;
+    padding: 40px;
+    margin-bottom: 25px;
+    border-color: var(--flashcard-shadow);
+    border-style: solid;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-radius: 8px;
+    background-color: var(--flashcard-color);
+    width: 30vw;
+    height: 23vh;
+}
+
+.set-card {
+    width: 250px;
+    height: 150px;
+    background-color: var(--mid-accent-color);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-color: var(--shadow-color);
+    border-style: solid;
+    color: var(--primary-color);
+    font-size: 16pt;
+}
+
+dialog {
+    width: 60vw;
+    height: 60vh;
+    padding: 30px;
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+    border-radius: 10px;
+    border-color: var(--shadow-color);
+    
+}
+
+dialog[open] {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    background-color: var(--primary-color);
+    padding-top: 0;
+    
+}
+
+dialog[open] > button {
+    margin: 5px;
+}
+
+#dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.video-block > iframe {
+    width: 90%;
+    min-width: 200px;
+    max-width: 300px;
+    border-radius: 10px;
+    background-color: var(--flashcard-shadow);
+    padding: 5px;
+}
+
+.explore-more {
+    display: grid;
+    border-radius: 10px;
+    background-color: var(--offset-light-accent-color);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding: 25px;
+
+}
+
+fieldset {
+    margin-bottom: 20px;
+    color: var(--dark-accent-color);
+}
+

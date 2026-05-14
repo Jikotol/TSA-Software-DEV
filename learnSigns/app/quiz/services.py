@@ -1,98 +1,124 @@
-from app.models import Gloss
-import random 
-# choose card from set --> make question
-# internal logic --> small set, hs and video else just 
+import random
+from ..models import MainGloss, Gloss
 
-# 10 qs, 20 qs, 30 qs
+import app.utils as utils 
 
+def init_quiz_data(cards):
+    """ Generates meta data for stuff, will be given to frontend as json
 
-# cardsNumber needs to be >= 4
-def generateQuestionData(cards):
-    cards = list(cards)
+    this is called when user loads quiz page
 
-    questionsNumber = choose_question_number(cards.length)
+    user_choices --> filled with terms
 
-    questions = []
+    questions_dict ={
+    this in camel case actually
+        {"correct_answer_data": {"gloss_id": Somenum, "flashcard_num": some_num}, "correct_answer": letter, "user_choices": choices, "type": some_string}
+    }"""
 
-    {"type": video, "flashcard": fc, "correct_answer": "a", "info": {"src"}, "choices": {"a": "some string", "b": "ahsheoif"}}
+    questions_num = choose_quiz_length(len(cards))
 
-    # return list of dict that contain the fc obj and type
+    available_cards = cards
 
-def generate_hand_shape_question(card, allCards):
+    questions = {}
+    question_index = 0
 
-    (choices, correct_answer) = init_hand_shape_choices(card, allCards)
+    while question_index < questions_num or len(available_cards) == 0:
+        random_card = choose_random(available_cards)
+        
+        # Initiallizes question dict
+        question_data_dict = init_question(available_cards, random_card)
 
-    return {
-        "type": "video",
-        "flashcard": card,
-        "correct_answer": correct_answer,
-        "choices": choices
+        # Prevents duplicate questions
+        
+        if is_duplicate_question(questions, question_data_dict, question_index):
+            question_data_dict["type"] = get_opposite_type(question_data_dict["type"])
+            if is_duplicate_question(questions, question_data_dict, question_index):
+                available_cards = [card for card in cards if card != random_card]
+                continue
+            
+        questions[question_index] = question_data_dict
+        question_index += 1
+
+    return questions
+   
+def get_opposite_type(question_type):
+    if question_type == "handshape":
+        return "video"
+    return "handshape"
+
+def init_question(all_cards, card):
+    question_data_dict = {}
+
+    question_data_dict["correctAnswerData"] = {
+        "glossId": card.gloss_id,
+        "flashcardId": card._id
     }
 
+    (choices, answer_letter) = init_choices(card, all_cards)
 
+    question_data_dict["userChoices"] = choices
+    question_data_dict["correctAnswer"] = answer_letter
+    question_data_dict["type"] = choose_random(["handshape", "video"])
 
+    return question_data_dict
 
-
-def init_hand_shape_choices(card, allCards):
+def init_choices(card, cards):
+    """ gives dict with answer choices, answer chioces are strings"""
     choices = {}
-    cards_used = []
     letters = ["a", "b", "c", "d"]
 
-    correctAnswerIndex = choose_random(range(len(letters)))
-    answer_letter = letters[correctAnswerIndex]
+    correct_index = choose_random(range(len(letters)))
+    answer_letter = letters[correct_index]
 
     choices[answer_letter] = card.term
 
-    del letters[correctAnswerIndex]
+    del letters[correct_index]
 
-    for letter in letters:
-        random_card = choose_random(allCards)
+    # Filters out correct answer card
+    valid_cards = [c for c in cards if c != card]
 
-
-
-
-def init_video_question(card, allCards):
-
-    (choices, correct_answer) = init_term_choices(card, allCards)
-
-    gloss = Gloss.query.filter_by(_id=card._id).first()
-
-    return {
-        "type": "video",
-        "flashcard": card,
-        "correct_answer": correct_answer,
-        "info": {"src": gloss.video.youtube_url, "credit": gloss.video.credit},
-        "choices": choices
-    }
-
-    
-def init_term_choices(card, allCards):
-    choices = {}
     cards_used = []
-    letters = ["a", "b", "c", "d"]
-
-    correctAnswerIndex = choose_random(range(len(letters)))
-    answer_letter = letters[correctAnswerIndex]
-
-    choices[answer_letter] = card.term
-
-    del letters[correctAnswerIndex]
 
     for letter in letters:
-        while True:
-            choice = choose_random(allCards)
+        available = [c for c in valid_cards if c not in cards_used]
 
-            if choice != card and choice not in cards_used:
-                choices[letter] = card.term
-                cards_used.append(card)
+        if not available:
+            
+            # Gets random gloss if run out of cards
+            main_gloss = utils.get_random_row(MainGloss)
+            head_gloss = Gloss.query.filter_by(_id=main_gloss.head_gloss_id).first() 
+            choices[letter] = head_gloss.display_name if head_gloss.display_name else head_gloss.asl_gloss
+            continue
+
+        random_card = choose_random(available)
+        choices[letter] = random_card.term
+        cards_used.append(random_card)
 
     return (choices, answer_letter)
 
-
-def choose_question_number(cardsNum):
+def choose_quiz_length(cardsNum):
     if cardsNum * 2 >= 30:
         return 30
     return cardsNum * 2
 
-def choose_random(cards):
-    return random.choice(cards)
+def choose_random(items):
+    return random.choice(items)
+
+def is_duplicate_question(all_questions, question, question_index):
+
+    all_questions[question_index] = question
+
+    question_tuple_list = convert_into_tuples(all_questions)
+
+    if len(all_questions) == len(set(question_tuple_list)):
+        return False
+    else:
+        return True
+    
+def convert_into_tuples(questions):
+    question_tuples = []
+
+    for _, question_dict in questions.items():
+        question_tuples.append((question_dict["type"], question_dict["correctAnswerData"]["glossId"]))
+
+    return question_tuples

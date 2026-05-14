@@ -34,12 +34,12 @@ export function initReviewModeButton(reviewButton, sessionState) {
 // Session state element
 
 export function initSessionState(cards, setName, setId) {
-    console.log(cards)
+
     return {
         "cards": cards,
         "setName": setName,
         "setId": setId,
-        "timeElapsed": 0,
+    
         "totalEFactor": addArrayNumbers(getAllEFactors(cards))
     }
 }

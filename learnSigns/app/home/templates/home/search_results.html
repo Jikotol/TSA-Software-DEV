@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Select Result{% endblock %}
 {% block content %}
+
+{% include "partials/_navigation-bar.html" %}
+
     <h1>Results for {{ search }}</h1>
     <ul>
         {% for result in main_gloss_results %}

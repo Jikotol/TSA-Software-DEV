@@ -1,10 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Merge Sets{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('sets.static', filename='css/sets.css')}}">
+{% endblock %}
+
 {% block content %}
 
-    
-
     <!-- REUSE LOGIC FROM SEARCH -->
+
+    <h1>Merge Sets</h1>
+
     <form action="/create/flashcards" method="POST" id="set-card-form">
         <div id="select-flashcard-div">
 
@@ -30,10 +36,10 @@
         </div>
 
         <!-- Displays wanted flashcards -->
-        <div id="kept-cards-div">
+        <div class="container" id="kept-cards-div">
+            <h4>Kept Cards</h4>
             <ul id="kept-cards-ul">
                 <li>Placeholder</li>
-
             </ul>
 
         </div>
@@ -66,6 +72,10 @@
         <input type="reset" value="Reset">
 
     </form>
+
+{% endblock %}
+
+{% block script %}
 
     <script>
 

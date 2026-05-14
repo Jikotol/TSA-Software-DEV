@@ -2,6 +2,8 @@
 {% block title %}Select Flashcard{% endblock %}
 {% block content %}
 
+{% include "partials/_navigation-bar.html" %}
+
     <h1 id="set-section-header">Choose Flashcard Set</h1>
     <ul id="set-cards-ul">
     {% if fc_sets %}
@@ -22,6 +24,10 @@
         <button id="yes-delete">Yes</button>
         <button id="no-delete">No</button>
     </dialog>
+
+{% endblock %}
+
+{% block script %}
 
     <script type="module">
         let setId = 0;

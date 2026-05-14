@@ -1,0 +1,97 @@
+body > div {
+    margin-bottom: 50px;
+    align-items: center;
+    justify-content: center;
+}
+
+body > nav {
+    margin-bottom: 50px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 50px;
+}
+
+nav > ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 70px;
+}
+
+.grid {
+    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.video-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    justify-content: space-evenly;
+}
+
+.gloss-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.search-container {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 0;
+    border-color: white;
+}
+
+#button-container {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    width: 60vw;
+    margin: 5px;
+}
+
+.study-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.study-container > iframe {
+    width: 50%;
+}
+
+.flashcard-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    flex-wrap: nowrap;
+}
+
+.vocab-container > * {
+    margin-bottom: 20px;
+}
+
+.vocab-container > iframe {
+    width: 600px;
+    height: 360px;
+}
+
+table, th, td {
+    padding: 10px;
+    border-color: var(--mid-accent-color);
+    background-color: var(--light-accent-color);
+    border-style: solid;
+    border-width: 5px;
+    border-collapse: collapse;
+
+}
+
+.in-line {
+    display: inline;
+}
+
+#button-container > button {
+    margin: 5px;
+    background-color: var(--mid-accent-color);
+}

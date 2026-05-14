@@ -12,6 +12,7 @@ from app.users.routes import users_bp
 from app.vocab.routes import vocab_bp
 from app.api.routes import api_bp
 from app.display import display_bp
+from app.quiz.routes import quiz_bp
 
 from app.users.services import current_user
 
@@ -35,6 +36,7 @@ def create_app():
     app.register_blueprint(users_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(display_bp)
+    app.register_blueprint(quiz_bp)
     
     app.register_blueprint(vocab_bp)
 

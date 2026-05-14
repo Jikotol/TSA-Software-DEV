@@ -1,10 +1,11 @@
-from flask import url_for, Blueprint, render_template
+from flask import url_for, Blueprint, render_template, request
 import json
 
 from app.extensions import db
 from app.models import Gloss, Video, MainGloss, FlashcardSet
 from app import utils
 from app.home.services import search_main_glosses
+from app.quiz.services import init_quiz_data
 
 from app.display import display_bp
 
@@ -83,7 +84,6 @@ def get_letter_glosses(letter):
 
 @api_bp.route("/partials/flashcard")
 def flashcard_partial():
-    print("H")
     """ 
     Contains the HTML for flipping and going through flashcards 
     
@@ -174,3 +174,66 @@ def delete_set(set_id):
         db.session.commit()
 
     return "Flashcards Successfully Deleted"
+
+#------------ quiz ----------------
+
+@api_bp.route("/quiz/<int:set_id>")
+
+def get_quiz_data(set_id):
+    fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
+
+    quiz_data = init_quiz_data(fc_set.cards)
+
+    return json.dumps(quiz_data)
+
+@api_bp.route("/quiz/display-data", methods=['POST'])
+def get_display_data():
+    print("get display data WAS CALLED")
+    questions = request.get_json()
+
+    display_data = {}
+
+    for num, question in questions.items():
+
+        gloss_id = question["correctAnswerData"]["glossId"]
+        question_type = question["type"]
+
+        if question_type == "video":
+            video = Video.query.filter_by(gloss_id=gloss_id).first()
+            display_data[num] = {
+                "youtubeUrl": video.youtube_url if video else None,
+                "credit": video.credit if video else None
+            }
+        else:
+            gloss = Gloss.query.filter_by(_id=gloss_id).first()
+
+            hs_img_dict = {}
+
+            for key, value in utils.get_hs_imgs(gloss, add_images_path=True).items():
+                if value:
+                    hs_img_dict[key] = url_for("display.static", filename=value)
+                else:
+                    hs_img_dict[key] = None
+
+            display_data[num] = {
+                "handshapes": {
+                    "dom_start": gloss.handshape.dom_start,
+                    "dom_end": gloss.handshape.dom_end,
+                    "non_dom_start": gloss.handshape.non_dom_start,
+                    "non_dom_end": gloss.handshape.non_dom_end
+                },
+                "hsImgs": hs_img_dict
+            }
+
+    return display_data
+@api_bp.route("/quiz/update-mastery/<int:set_id>/<int:score>")
+def update_mastery(set_id, score):
+    flashcardSet = FlashcardSet.query.filter_by(_id=set_id).first()
+
+    if (score > 85):
+        flashcardSet.mastery_level = 3
+    elif (score > 70):
+        flashcardSet.mastery_level = 2
+    else:
+        flashcardSet.mastery_level = 1
+    return "Mastery Level Successfully Updated"

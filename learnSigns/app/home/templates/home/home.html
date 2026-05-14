@@ -1,17 +1,26 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('home.static', filename='home.css')}}">
+{% endblock %}
+
 {% block content %}
 
-    <h1>Welcome {% if not user %}Visitor{% endif %}{{ user.username }}</h1>
+    {% include "partials/_navigation-bar.html" %}
+
+    <h1 class="welcome-message">Welcome {% if not user %}Visitor{% endif %}{{ user.username }}</h1>
 
     <div id="search-div">
         <form action="" method="POST">
             <label for="gloss-search">Search for ASL word: </label>
             <div class="search-container">
                 <input id="gloss-search" name="search" type="text" placeholder="Search for ASL word">
-                <ul class="search-suggestions" id="typing-suggestions">
+                <div id="suggestions-div" class="suggestions-container" hidden>
+                    <ul class="search-suggestions" id="typing-suggestions">
                     <!-- autocomplete list -->
-                </ul>
+                    </ul>
+                </div>
             </div>
         </form>
     </div>
@@ -34,13 +43,19 @@
         {% endfor %}
     </div>
 
+{% endblock %}
+
+{% block script %}
+
     <script>
         const searchBarEl = document.getElementById("gloss-search");
         const suggestionsUL = document.getElementById("typing-suggestions");
+        const suggestionsDiv = document.getElementById("suggestions-div");
         let timeout;
 
         // Dynamically updates search suggestions while user types in search bar
         searchBarEl.addEventListener("input", () => {
+            suggestionsDiv.hidden = false
             clearTimeout(timeout)
 
             // Delay for a smaller runtime footprint
@@ -51,6 +66,10 @@
                 updateSearchSuggestions(currentSearch);
 
             }, 150);
+        })
+
+        searchBarEl.addEventListener("blur", () => {
+            suggestionsDiv.hidden = true
         })
 
         async function updateSearchSuggestions(search) {

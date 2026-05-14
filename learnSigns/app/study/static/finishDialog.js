@@ -12,21 +12,8 @@ export function setupFinishDialog(document, cardButtonsDiv, sessionState) {
 
     setupNavigationButtons(elements, sessionState);
 
-    setupFinishDialogToggle(elements, sessionState);
-
     setupCardButtonsDiv(elements, cardButtonsDiv, sessionState);
 
-}
-
-function setupFinishDialogToggle(elements, sessionState) {
-    const { timeHeader, finishDialog } = elements;
-
-    finishDialog.addEventListener('toggle', (event) => {
-        if (finishDialog.open) {
-            updateTermsLearnedList(elements, sessionState);
-            timeHeader.innerText = formatElapsedTime(sessionState.timeElapsed);
-        }
-    });
 }
 
 function setupCardButtonsDiv(elements, cardButtonsDiv, sessionState) {
@@ -34,7 +21,6 @@ function setupCardButtonsDiv(elements, cardButtonsDiv, sessionState) {
 
     cardButtonsDiv.addEventListener("click", (event) => {
         if (event.target.tagName === "BUTTON") {
-            console.log(getAllEFactors(sessionState.cards));
 
             let averageEFactor = addArrayNumbers(getAllEFactors(sessionState.cards));
 
@@ -55,7 +41,6 @@ function getAllElements(document) {
         resetConfirmDialog: document.getElementById("reset-progress-dialog"),
         ...getNavigationElements(finishDialog),
         ...getInfoElements(finishDialog),
-        ...getTermListElements(finishDialog)
     }
 }
 
@@ -65,7 +50,8 @@ function getNavigationElements(finishDialog) {
         finishNavigationDiv,
         resetLearningButton: finishNavigationDiv.querySelector("#reset-learning-button"),
         reviewModeButton: finishNavigationDiv.querySelector("#review-mode-button"),
-        returnToSetsButton: finishNavigationDiv.querySelector("#return-to-sets-button")
+        returnToSetsButton: finishNavigationDiv.querySelector("#return-to-sets-button"),
+        quizModeButton: finishNavigationDiv.querySelector("#quiz-button")
     }
 }
 
@@ -73,19 +59,11 @@ function getInfoElements(finishDialog) {
     const finishInfoDiv = finishDialog.querySelector("#finish-details-div");
     return {
         finishInfoDiv: finishInfoDiv,
-        timeHeader: finishInfoDiv.querySelector("#final-time-elapsed-header"),
         finishHeader: finishInfoDiv.querySelector("#finish-header"),
         termsLearnedHeader: finishInfoDiv.querySelector("#total-learned-header")
     }   
 }
 
-function getTermListElements(finishDialog) {
-    const termsLearnedDiv = finishDialog.querySelector("#terms-learned-list-div");
-    return {
-        termsLearnedDiv: termsLearnedDiv,
-        termsListUl: termsLearnedDiv.querySelector("#terms-learned-ul")
-    }
-}
 
 function setupSessionData(elements, sessionState) {
     const { finishHeader, termsLearnedHeader } = elements;
@@ -94,27 +72,19 @@ function setupSessionData(elements, sessionState) {
     termsLearnedHeader.innerText = `Terms Learned: ${sessionState.cards.length}`
 }
 
-
-function updateTermsLearnedList(elements, sessionState) {
-    const { document, termsListUl } = elements;
-
-    termsListUl.innerHTML = "";
-
-    sessionState.cards.forEach((card) => {
-        let cardLi = document.createElement("LI");
-        cardLi.innerText = card.term;
-        termsListUl.appendChild(cardLi);
-    })
-}
-
 function setupNavigationButtons(elements, sessionState) {
-    const { reviewModeButton, returnToSetsButton } = elements;
+    const { reviewModeButton, quizModeButton, returnToSetsButton } = elements;
 
     setupResetLearningButton(elements, sessionState);
 
     // From flashcard.js
     initReviewModeButton(reviewModeButton, sessionState); 
     initReturnToSetsButton(returnToSetsButton);
+
+    quizModeButton.addEventListener("click", () => {
+
+        window.location.href = `/quiz/${sessionState.setId}`;
+    })
 
 }
 
@@ -140,7 +110,6 @@ function setupResetConfirmationDialog(finishDialog, resetConfirmDialog, sessionS
             finishDialog.close();
             resetConfirmDialog.close();
             sessionState.totalEFactor = 0;
-            sessionState.timeElapsed = 0;
         } else if (event.target.id === "no-reset-button") {
             resetConfirmDialog.close();
         }

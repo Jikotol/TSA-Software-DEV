@@ -1,7 +1,19 @@
+{% extends "base.html" %}
+
 {% block title %}Review{% endblock %}
 
-{% include "partials/_flashcard.html" %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('study.static', filename='css/study.css')}}">
+{% endblock %}
+ 
+{% block content %}
 
+    {% include "partials/_navigation-bar.html" %}
+    {% include "partials/_flashcard.html" %}
+
+{% endblock %}
+
+{% block script %}
 
     <script type="module">
 
@@ -21,4 +33,4 @@
         setupReviewActions(cards, cardState);
 
     </script>
-
+{% endblock %}

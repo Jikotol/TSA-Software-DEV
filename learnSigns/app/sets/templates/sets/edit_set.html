@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Edit Set{% endblock %}
+
 {% block content %}
     <form action="/sets/edit/{{ fc_set._id }}" id="edit-form" method="POST">
         <h4>Current Name: {{ fc_set.name }}</h4>
@@ -39,6 +40,10 @@
 
     <button id="undo-edit">Undo Edit</button>
     
+{% endblock %}
+
+{% block script %}
+
     <script>
 
         document.getElementById("undo-edit").addEventListener("click", () => {

@@ -16,7 +16,7 @@ export function setupLearnActions(cards, cardState) {
 function setupFlashcardUpdate(elements, cards, cardState) {
     const { cardButtonsDiv } = elements;
 
-    cardButtonsDiv.addEventListener("click", () => {
+    cardButtonsDiv.addEventListener("click", (event) => {
         if (event.target.tagName === "BUTTON") {
             selectWeightedCard(cards, cardState);
             loadCard(cards, cardState);

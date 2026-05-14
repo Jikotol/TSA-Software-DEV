@@ -9,15 +9,10 @@ LearnSigns is a website to help users, from beginner to advanced.
   - **User Accounts** in order to save flashcard sets
   - **User Flashcard Sets** with custom info and formats
   - **SQL Relational Databases** to accurately represent ASL
-
-## :wrench: In Progress
-  - **CSS**
-  - **Error Checking Code**
-  - **Detailed Documentation**
-
-## :sparkles: Future Features
   - **Anki-Inspired Flashcard Spacing** to enhance learning
   - **Quiz Mode** to solidify terms in a fun, easy way
+
+## :sparkles: Future Features
   - **Articles** expanding past vocab
   - **Personalized Recommendations** to lower the barrier of learning
   - **Progress Tracking** to motivate users to continue learning

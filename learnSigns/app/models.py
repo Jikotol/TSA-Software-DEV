@@ -17,6 +17,7 @@ class FlashcardSet(db.Model):
     name = db.Column("set_name", db.String(100), nullable=False)
     default_front = db.Column("default_front", db.String(10), default="term", nullable=False)
     default_back = db.Column("default_back", db.String(10), default="visual", nullable=False)
+    mastery_level = db.Column("mastery_level", db.Integer) # Mastery level based on quiz score
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     cards = db.relationship("Flashcard", backref="set", cascade="all, delete-orphan")

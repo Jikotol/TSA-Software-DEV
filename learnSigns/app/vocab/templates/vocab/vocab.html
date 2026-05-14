@@ -2,6 +2,8 @@
 {% block title %}Vocab{% endblock %}
 {% block content %}
 
+{% include "partials/_navigation-bar.html" %}
+
     <h1>{{ main_gloss.main_gloss }}</h1>
     <div id="vocab-container" class="vocab-container">
         <form action="/create/configure/flashcards" method="POST">
@@ -42,11 +44,13 @@
             {% endif %}
         </div>
     </div>
+{% endblock %}
 
+{% block script %}
 
+    <script type="module">
+        import {loadHandshapeTable} from "/static/vocab/handshape_table.js";
 
-
-    <script>
         const MAIN_GLOSS_ID = "{{ main_gloss._id }}";
         const HAND_SHAPE_LIST = ["dom_start", "dom_end", "non_dom_start", "non_dom_end"];
 
@@ -82,76 +86,7 @@
             }
         }
 
-        // Gets a handshape table and inserts data
-        async function loadHandshapeTable(handshapeData, handshapeImgs) {
-            // Gets html elements of the hand shape table contained in a doc 
-            const doc = await getHandshapeTableDoc();
-
-            injectHandshapeData(handshapeData, handshapeImgs, doc);
-            updateHandshapeTable(doc);
-        }
-
-        async function getHandshapeTableDoc() {
-            const response = await fetch("{{ url_for('display.static', filename='handshapes-table.html') }}");
-            const htmlString = await response.text();
-
-            const parser = new DOMParser();
-
-            // Creates HTML elements from html string
-            const doc = parser.parseFromString(htmlString, 'text/html');
-
-            return doc;
-        }
-
-        function injectHandshapeData(handshapeData, handshapeImgs, doc) {
-            for (const handshape of HAND_SHAPE_LIST) {
-                console.log(handshape)
-                var p = document.createElement("p");
-                var hs_img = document.createElement("img");
-
-                // Inserts the handshape label
-                p.innerText = handshapeData[handshape];
-
-                // Inserts video
-                if (handshapeImgs[handshape]) {
-                    hs_img.setAttribute("src", handshapeImgs[handshape]);
-                }
-                
-                if (handshapeData[handshape]) {
-
-                    // Gets the td element from the parsed handshape table
-                    tableSection = doc.getElementsByClassName(handshape.replaceAll("_", "-"))[0]
-
-                    tableSection.appendChild(p);
-
-                    if (handshapeImgs[handshape]) {
-                        tableSection.appendChild(hs_img);
-                    }
-                }
-            }
-        }
-
-        function updateHandshapeTable(doc) {
-
-            const handshapeTableEl = document.getElementById("handshape-table");
-
-            // Adds the handshape paragraph and image element to table
-            handshapeTableEl.innerHTML = "";
-            handshapeTableEl.append(...doc.body.childNodes);
-        }
-
-        // Changes the URL to change the variant gloss showed
-        function navigateToGloss(glossID) {
-            history.pushState({}, "", `/vocab/${MAIN_GLOSS_ID}/${glossID}`);
-        }
-        
-        // Updates DOM info when user changes select element
-        glossSelectEl = document.getElementById("gloss-select");
-        glossSelectEl.addEventListener("change", () => {
-            if (glossSelectEl.value) {
-                navigateToGloss(glossSelectEl.value);
-            }
-        })
+        const glossSelectEl = document.getElementById("gloss-select");
 
         // Loads DOM info when url changes
         window.addEventListener("DOMContentLoaded", () => {

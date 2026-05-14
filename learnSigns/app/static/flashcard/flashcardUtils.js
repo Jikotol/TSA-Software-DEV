@@ -31,7 +31,7 @@ export function getCardStructureElements() {
     return {
         cardButtonsDiv,
         nameHeader: document.getElementById("name-header"),
-        cardContainer: document.getElementById("card-div"),
+        cardContainer: document.getElementById("card-div")
     }
 }
 

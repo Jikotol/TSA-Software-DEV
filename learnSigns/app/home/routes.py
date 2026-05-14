@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for
 import json
 from .services import find_main_gloss, get_main_head_tuples
 
-main_bp = Blueprint("home", __name__, template_folder="templates")
+main_bp = Blueprint("home", __name__, template_folder="templates", static_folder="static", static_url_path="/home/static")
 
 @main_bp.route("/", methods=["POST", "GET"])
 @main_bp.route("/home", methods=["POST", "GET"])

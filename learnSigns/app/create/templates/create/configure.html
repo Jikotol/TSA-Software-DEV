@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Vocab{% endblock %}
+
 {% block content %}
+
+    {% include "partials/_navigation-bar.html" %}
 
     <h1>{{ gloss.asl_gloss }}</h1>
 
@@ -91,6 +94,8 @@
 
     </form>
 
+{% endblock %}
+{% block script %}
 
     <script>
         const setAttributesEl = document.getElementById("set-attributes-fieldset");

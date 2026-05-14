@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ user.username }}Profile{% endblock %}
 {% block content %}
+
+{% include "partials/_navigation-bar.html" %}
+
     <p>Hallo</p>
 
     <button id="logout-button">Logout</button>
+{% endblock %}
 
+{% block script %}
     <script>
         const logoutButton = document.getElementById("logout-button");
 

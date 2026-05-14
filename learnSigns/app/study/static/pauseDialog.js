@@ -13,7 +13,6 @@ export function setupPauseDialog(pauseButton, sessionState) {
     
     pauseButton.addEventListener("click", () => {
         pauseDialog.showModal();
-        timeHeader.innerText = formatElapsedTime(sessionState.timeElapsed);
     })
 
     const pauseNavigationDiv = pauseDialog.querySelector("#pause-navigation-div");
@@ -26,17 +25,8 @@ function setupSessionData(pauseInfoDiv, sessionState) {
     const pauseHeader = pauseInfoDiv.querySelector("#pause-header");
     pauseHeader.innerText = `${sessionState.setName} Paused`;
 
-    const percentLearnedHeader = pauseInfoDiv.querySelector("#percent-learned-header");
-    percentLearnedHeader.innerText = getPercentLearned(sessionState.cards)
-
 }
 
-function getPercentLearned(cards) {
-    const totalCardsNum = cards.length
-    const learnedCards = cards.filter(card => card.eFactor === MAX_E_FACTOR);
-
-    return floatToPercent((learnedCards.length / totalCardsNum));
-}
 
 function setupNavigationButtons(pauseDialog, pauseNavigationDiv, sessionState) {
     const cancelButton = pauseNavigationDiv.querySelector("#cancel-navigation-button");

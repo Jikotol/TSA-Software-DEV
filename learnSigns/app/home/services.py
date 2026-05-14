@@ -3,7 +3,7 @@ from sqlalchemy import or_
 from app.models import Components, MainGloss, Gloss
 from app.extensions import db
 
-import app.utils as utils
+import app.utils as utils 
 
 def find_main_gloss(search):
     """

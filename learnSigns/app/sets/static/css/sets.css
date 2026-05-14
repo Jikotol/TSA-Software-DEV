@@ -1,0 +1,8 @@
+.container {
+    position: relative;
+    border: 1px solid rgb(53 93 57);
+    margin-top: 20px; /* Space for the legend above */
+    padding-left: 10px;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+}

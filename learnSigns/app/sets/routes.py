@@ -5,7 +5,8 @@ from .services import delete_cards
 
 import json
 
-sets_bp = Blueprint("sets", __name__, url_prefix="/sets", template_folder="templates")
+sets_bp = Blueprint("sets", __name__, url_prefix="/sets", template_folder="templates", static_folder="static", static_url_path="/sets/static")
+
 
 @sets_bp.route("/edit/<int:set_id>", methods=["POST", "GET"])
 def edit_set(set_id):

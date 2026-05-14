@@ -1,0 +1,16 @@
+:root {
+    --flashcard-color: rgb(219, 224, 230);
+    --flashcard-shadow: rgb(177, 190, 206);
+    --primary-color: rgb(247 242 242);
+    --light-accent-color: rgb(149 179 145);
+    --mid-accent-color: rgb(123, 142, 119);
+    --dark-accent-color: rgb(53 93 57);
+    --primary-text-color: rgb(76 74 74);
+    --offset-primary-color: rgb(247 242 242);
+    --offset-light-accent-color: rgb(212 221 210);
+    --complementary-color: rgb(210 180 80);
+    --shadow-color: rgb(176, 190, 175);
+    --font-family: "Helvetica Neue", Arial, Verdana, sans-serif;
+    --hyperlink-color: rgb(57 128 203)
+
+}

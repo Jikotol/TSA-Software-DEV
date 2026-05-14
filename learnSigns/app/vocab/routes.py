@@ -3,7 +3,7 @@ from flask import Blueprint, render_template
 from app.models import MainGloss, Gloss
 from .services import get_related_glosses
 
-vocab_bp = Blueprint("vocab", __name__, url_prefix="/vocab", template_folder="templates")
+vocab_bp = Blueprint("vocab", __name__, url_prefix="/vocab", template_folder="templates", static_folder="static", static_url_path="/vocab/static")
 
 
 @vocab_bp.route("/list", methods=["POST", "GET"])

@@ -2,6 +2,8 @@
 {% block title %}Vocab List{% endblock %}
 {% block content %}
 
+{% include "partials/_navigation-bar.html" %}
+
     {% set upper_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
     <div id="button-container">
         {% for letter in upper_chars %}
@@ -12,7 +14,9 @@
     <h2 id="letter-header"></h2>
     <ul class="explore-more" id="letter-glosses-list"></ul>
 
-        
+{% endblock %}
+
+{% block script %}
 
     <script>
         letterButtonDiv = document.getElementById("button-container");
@@ -67,5 +71,6 @@
         }
             
     </script>
+
 {% endblock %}
 

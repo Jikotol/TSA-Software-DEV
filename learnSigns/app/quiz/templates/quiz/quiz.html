@@ -1,16 +1,71 @@
 {% extends "base.html" %}
 
-{% includes "_select-correct.html" %}
-
 {% block content %}
 
-    <button type="radio" name="user_answer">A</button>
-    <button type="radio" name="user_answer">B</button>
-    <button type="radio" name="user_answer">C</button>
-    <button type="radio" name="user_answer">D</button>
+{% include "partials/_navigation-bar.html" %}
 
-    <script>
-        injectSelectCorrect
+    <h1 id="question-header">Question # of ##</h1>
+
+    <div id="visual-display-div">
+        <div id="handshape-table"></div>
+        <div id="video-block">
+            <iframe id="sign-video"></iframe>
+            <p id="credit-paragraph"></p>
+        </div>
+    </div>
+    <form id="answer-form">
+        <fieldset id="answer-choices-fieldset">
+            <legend id="question-legend"></legend>
+
+            <input type="radio" name="user_answer" id="answer-a" value="a"></input>
+            <label id="answer-a-label" for="answer-a">A-PLACEHOLDER</label>
+            <input type="radio" name="user_answer" id="answer-b" value="b"></input>
+            <label id="answer-b-label" for="answer-b">B-PLACEHOLDER</label>
+            <input type="radio" name="user_answer" id="answer-c" value="c"></input>
+            <label id="answer-c-label" for="answer-c">C-PLACEHOLDER</label>
+            <input type="radio" name="user_answer" id="answer-d" value="d"></input>
+            <label id="answer-d-label" for="answer-d">D-PLACEHOLDER</label>
+        </fieldset>
+    </form>
+
+    <div id="quiz-action-div">
+        <button type="button" id="back-button">Back</button>
+        <button type="button" id="next-button">Next</button>
+    </div>
+
+    {% include "partials/_quiz_finish_dialog.html" %}
+    {% include "partials/_confirm-submission.html" %}
+   
+{% endblock %}
+
+{% block script %}
+
+    <script type="module">
+        import { setupQuiz, initQuizState } from "{{ url_for('quiz.static', filename='quizUtils.js') }}";
+
+        import { setupFinishDialog } from "{{ url_for('quiz.static', filename='quizFinishDialog.js' )}}";
+        import { setupSubmissionDialog } from "{{ url_for('quiz.static', filename='submissionDialog.js' )}}";
+
+        const flashcardSetId = {{ setId }};
+        
+        const request = await fetch("/api/quiz/" + flashcardSetId);
+        const quizData = await request.json();
+
+        const quizState = initQuizState(Object.keys(quizData).length, flashcardSetId, );
+
+        const displayDataRequest = await fetch("/api/quiz/display-data", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", // allows  backend to recognize JSON
+            },
+            body: JSON.stringify(quizData), // Converts the object to a JSON string
+        })
+
+        const displayData = await displayDataRequest.json();
+
+        setupQuiz(quizState, quizData, displayData);
+        setupSubmissionDialog(quizState, quizData);
+        
     </script>
 
 {% endblock %}

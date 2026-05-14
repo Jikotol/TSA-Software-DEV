@@ -1,0 +1,61 @@
+dialog[open] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-top: 0;
+    margin: 35px, 30px;
+    gap: 5px;
+    background-color: var(--primary-color);
+    width: 53vw;
+    height: 43vh;
+}
+
+dialog[open] > * {
+    align-self: stretch;
+    text-align: center;
+    margin: 10px 5px;
+}
+
+dialog[open] > div > h1 {
+    font-size: 50px
+}
+
+dialog[open] > div > h3 {
+    font-size: 30px
+}
+
+
+.flashcard {
+    width: 55vw;
+    height: 45vh;
+    margin-bottom: 10px;
+}
+
+.flashcard h1 {
+    font-size: 60px;
+}
+
+iframe {
+    width: 90%;
+    height: 90%;
+}
+
+.pause-button {
+    display: inline-flex;
+}
+
+button {
+    margin: 0 5px;
+}
+
+
+.study-finish-dialog {
+    width: 60vw;
+    height: 55vh;
+}
+
+.confirm-submission-dialog {
+    width: 10vw;
+    height: 10vh;
+}

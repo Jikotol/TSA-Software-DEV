@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
+
+{% include "partials/_navigation-bar.html" %}
+
     <h1>{{ msg }}</h1>
 {% endblock %}
