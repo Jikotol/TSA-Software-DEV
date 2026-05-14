@@ -1,6 +1,7 @@
 export function setupFinishDialog(quizState, quizData) {
     const elements = getAllElements()
 
+    // Returns score as a percentage
     const score = calculateScore(quizState, quizData);
 
     setupNavigationButtons(elements);
@@ -32,8 +33,6 @@ function setupNavigationButtons(elements) {
 function updateHeaders(elements, score) {
     const { nameHeader, scoreHeader } = elements;
 
-    console.log(score)
-
     scoreHeader.innerText = "You got " + score + "% correct!"
 
     let congratsMessage = "Nice try!"
@@ -54,9 +53,6 @@ function calculateScore(quizState, quizData) {
 
     for (const [ index, questionData ] of Object.entries(quizData)) {
         if (quizState["userAnswers"][index] == questionData["correctAnswer"]) {
-            console.log(questionData["correctAnswer"])
-            console.log(quizState)
-            console.log(questionData)
             score += 1;
         }
         

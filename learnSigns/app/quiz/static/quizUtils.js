@@ -18,9 +18,8 @@ export function initQuizState(questionNum, setId) {
 
     return {
         questionIndex: 0, // Current question number
-        userAnswers: answers,
+        userAnswers: answers, // Users answers for all questions
         questionNum: questionNum, // Number of questions in quiz
-        reviewMode: false,
         setId: setId
     }
 }

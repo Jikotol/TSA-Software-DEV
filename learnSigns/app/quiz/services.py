@@ -4,16 +4,17 @@ from ..models import MainGloss, Gloss
 import app.utils as utils 
 
 def init_quiz_data(cards):
-    """ Generates meta data for stuff, will be given to frontend as json
+    """ 
+    Generates meta data for quiz. Includes question labels, card information, and answer choices
 
-    this is called when user loads quiz page
-
-    user_choices --> filled with terms
-
-    questions_dict ={
-    this in camel case actually
-        {"correct_answer_data": {"gloss_id": Somenum, "flashcard_num": some_num}, "correct_answer": letter, "user_choices": choices, "type": some_string}
-    }"""
+    
+    cards: list(FlashCard)
+    rtype: dict {
+        "correctAnswerData": {"glossId": int, "flashcardNum": int}, 
+        "correct_answer": str(letter), "user_choices": {0: str(letter), 1:str(letter)...}, 
+        "type": str('handshape' or 'video')
+    }
+    """
 
     questions_num = choose_quiz_length(len(cards))
 
@@ -22,6 +23,7 @@ def init_quiz_data(cards):
     questions = {}
     question_index = 0
 
+    # Generates all the questions
     while question_index < questions_num or len(available_cards) == 0:
         random_card = choose_random(available_cards)
         
@@ -29,9 +31,9 @@ def init_quiz_data(cards):
         question_data_dict = init_question(available_cards, random_card)
 
         # Prevents duplicate questions
-        
         if is_duplicate_question(questions, question_data_dict, question_index):
             question_data_dict["type"] = get_opposite_type(question_data_dict["type"])
+
             if is_duplicate_question(questions, question_data_dict, question_index):
                 available_cards = [card for card in cards if card != random_card]
                 continue
@@ -42,6 +44,10 @@ def init_quiz_data(cards):
     return questions
    
 def get_opposite_type(question_type):
+    """
+    question_type: str
+    rtype: str
+    """
     if question_type == "handshape":
         return "video"
     return "handshape"

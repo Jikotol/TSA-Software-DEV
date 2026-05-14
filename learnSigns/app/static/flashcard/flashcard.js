@@ -8,8 +8,6 @@ import { MAX_E_FACTOR } from "../utils/constants.js";
 export function loadCard(cards, state) {
     let card = cards[state.index];
 
-    console.log(card)
-
     clearFlashcard(state.cardContainer);
     state.side = "front";
     

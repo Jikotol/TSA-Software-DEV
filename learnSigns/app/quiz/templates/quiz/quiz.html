@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('quiz.static', filename='css/quiz.css')}}">
+{% endblock %}
+
 {% block content %}
 
 {% include "partials/_navigation-bar.html" %}
@@ -63,7 +67,10 @@
 
         const displayData = await displayDataRequest.json();
 
+        // Sets up quiz actions and rendering
         setupQuiz(quizState, quizData, displayData);
+
+        // Sets up submit confirmation dialog
         setupSubmissionDialog(quizState, quizData);
         
     </script>

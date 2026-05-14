@@ -49,13 +49,7 @@ button {
     margin: 0 5px;
 }
 
-
 .study-finish-dialog {
     width: 60vw;
     height: 55vh;
-}
-
-.confirm-submission-dialog {
-    width: 10vw;
-    height: 10vh;
 }

@@ -178,8 +178,13 @@ def delete_set(set_id):
 #------------ quiz ----------------
 
 @api_bp.route("/quiz/<int:set_id>")
-
 def get_quiz_data(set_id):
+    """
+    Formats quiz data for quiz.html
+
+    set_id: int
+    rtype: JSON object
+    """
     fc_set = FlashcardSet.query.filter_by(_id=set_id).first()
 
     quiz_data = init_quiz_data(fc_set.cards)
@@ -188,7 +193,11 @@ def get_quiz_data(set_id):
 
 @api_bp.route("/quiz/display-data", methods=['POST'])
 def get_display_data():
-    print("get display data WAS CALLED")
+    """
+    Formats data for HTML rendering in quiz.html
+
+    rtype: JSON object
+    """
     questions = request.get_json()
 
     display_data = {}
@@ -226,8 +235,17 @@ def get_display_data():
             }
 
     return display_data
+
+
 @api_bp.route("/quiz/update-mastery/<int:set_id>/<int:score>")
 def update_mastery(set_id, score):
+    """
+    Updates mastery level of flashcard set after quiz is done
+
+    set_id: int
+    score: int
+    rtype: str
+    """
     flashcardSet = FlashcardSet.query.filter_by(_id=set_id).first()
 
     if (score > 85):

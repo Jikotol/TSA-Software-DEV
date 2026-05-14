@@ -35,8 +35,6 @@ export function getCardStructureElements() {
     }
 }
 
-
-
 export function setupFlashcard(elements, cards, cardState) {
     const { nameHeader, cardContainer } = elements;
 
