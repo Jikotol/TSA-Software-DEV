@@ -21,7 +21,7 @@ LearnSigns is a website to help users, from beginner to advanced.
 ``` bash
 # Clone the repository
 git clone <repo-url>
-cd LearnSigns
+cd learnSigns
 
 # Install dependencies
 pip install -r requirements.txt
