@@ -25,6 +25,7 @@ function setupFlashcardSync(elements, cards, cardState) {
             
             // Syncs changes
             loadCard(cards, cardState);
+
         }
     })
 }

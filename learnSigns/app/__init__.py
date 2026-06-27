@@ -41,6 +41,8 @@ def create_app():
     app.register_blueprint(vocab_bp)
 
     app.context_processor(inject_user)
+
+    
     
 
     return app

@@ -34,6 +34,5 @@ def get_handedness(row):
 def main():
     df = pd.read_csv("final_data.csv")
     hs_freq_dict = make_hs_freq_dict(df)
-    print(hs_freq_dict["B-L"], hs_freq_dict["B"])
 if __name__ == "__main__":
     main()

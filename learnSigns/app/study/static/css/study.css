@@ -26,19 +26,15 @@ dialog[open] > div > h3 {
 }
 
 
-.flashcard {
+.study-container {
     width: 55vw;
-    height: 45vh;
-    margin-bottom: 10px;
+    height: 50vh;
+    margin: auto;
 }
 
-.flashcard h1 {
+.front h1,
+.back h1 {
     font-size: 60px;
-}
-
-iframe {
-    width: 90%;
-    height: 90%;
 }
 
 .pause-button {

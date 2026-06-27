@@ -248,10 +248,9 @@ def update_mastery(set_id, score):
     """
     flashcardSet = FlashcardSet.query.filter_by(_id=set_id).first()
 
-    if (score > 85):
-        flashcardSet.mastery_level = 3
-    elif (score > 70):
-        flashcardSet.mastery_level = 2
-    else:
-        flashcardSet.mastery_level = 1
+    flashcardSet.mastery_score = score
+    db.session.commit()
+
+    print(flashcardSet.mastery_score)
+    print("SHFIUHEFWUE")
     return "Mastery Level Successfully Updated"

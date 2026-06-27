@@ -1,3 +1,7 @@
+[hidden] {
+  display: none !important;
+}
+
 button {
     background-color: var(--light-accent-color);
     color: var(--offset-primary-color);
@@ -6,6 +10,7 @@ button {
     padding: 5px 10px;
     cursor: pointer;
     border: 0;
+    margin: 
 }
 
 .special-buttons {
@@ -44,27 +49,6 @@ button {
     height: 23vh;
 }
 
-.set-card {
-    width: 250px;
-    height: 150px;
-    background-color: var(--mid-accent-color);
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    margin: 10px;
-    border-right-width: 15px;
-    border-bottom-width: 15px;
-    border-left-width: 0;
-    border-top-width: 0;
-    border-color: var(--shadow-color);
-    border-style: solid;
-    color: var(--primary-color);
-    font-size: 16pt;
-}
-
 dialog {
     width: 60vw;
     height: 60vh;
@@ -75,7 +59,6 @@ dialog {
     border-top-width: 0;
     border-radius: 10px;
     border-color: var(--shadow-color);
-    
 }
 
 dialog[open] {
@@ -124,3 +107,97 @@ fieldset {
     color: var(--dark-accent-color);
 }
 
+.front,
+.back {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    border-color: var(--flashcard-shadow);
+    place-items: center;
+    background-color: var(--flashcard-color);
+    border-style: solid;
+    border-radius: 8px;
+    display: grid;
+    box-shadow: 0 0 5px 2px rgba(50, 50, 50, 0.25);
+    box-sizing: border-box;
+    padding: 5% 10%;
+
+}
+
+.back {
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0px;
+    border-top-width: 0px;
+    transform: rotateX(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.front {
+    border-right-width: 15px;
+    border-bottom-width: 15px;
+    border-left-width: 0;
+    border-top-width: 0;
+}
+
+.study-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 800px;
+    width: 30vw;
+    height: 23vh;
+}
+
+.study-container:hover > .card {
+    cursor: pointer;
+}
+
+.card {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    transition: transform 1000ms;
+    transform-style: preserve-3d;
+}
+
+.front iframe,
+.back iframe {
+    width: 90%;
+    height: 90%;
+}
+
+
+.info-close-button {
+    margin-left: auto;
+}
+
+.set-info-container {
+    position: relative;
+}
+
+.dialog-info-header {
+    width: 100%;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+}
+
+.yes-no-button {
+    display: inline-block;
+    width: 18%;
+}
+
+.text-input-container > input {
+    margin-top: 5px;
+    border: none;
+    width: 300px;
+    height: 20px;
+    border-radius: 15px;
+    padding-left: 10px;
+}

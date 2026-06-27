@@ -1,18 +1,35 @@
 {% extends "base.html" %}
 {% block title %}{{ user.username }}Profile{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('users.static', filename='css/users.css')}}">
+{% endblock %}
+
 {% block content %}
 
 {% include "partials/_navigation-bar.html" %}
 
+    <h1 class="welcome-message">{{ user.username }}'s Profile</h1> 
+
     <button id="logout-button">Logout</button>
+    <button id="show-mastery-scores-button">Mastery Scores</button>
+
+    {% include "partials/mastery-scores-dialog.html" %}
 {% endblock %}
 
+
+
 {% block script %}
-    <script>
+    <script type="module">
+        import { setupMasteryScoreDialog } from "{{ url_for('users.static', filename='profile.js' )}}";
         const logoutButton = document.getElementById("logout-button");
 
         logoutButton.addEventListener("click", () => {
             window.location.href = "{{ url_for('users.logout') }}";
         })
+
+        setupMasteryScoreDialog();
+
+
     </script>
 {% endblock %}

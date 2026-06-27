@@ -119,7 +119,19 @@ function syncQuiz(elements, quizState, quizData, displayData) {
     syncVisualDisplay(elements, questionType, quizState, displayData);
     syncAnswerChoices(elements, questionData);
     syncQuestionInfo(elements, quizState, quizData);
+    loadUserAnswer(elements, quizState)
 
+}
+
+function loadUserAnswer(elements, quizState) {
+    const userAnswer = quizState.userAnswers[quizState.questionIndex];
+    if (userAnswer) {
+        // Selects answered question input element
+        let answerInput = document.querySelector(`[name="user_answer"][value="${userAnswer}"]`);
+        if (answerInput) {
+            answerInput.checked = true;
+        }
+    }
 }
 
 function syncQuestionInfo(elements, quizState, quizData) {

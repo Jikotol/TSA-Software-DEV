@@ -32,4 +32,3 @@ def current_user():
     """
     if "user_id" in session:
         return User.query.filter_by(_id=session["user_id"]).first()
-    return None

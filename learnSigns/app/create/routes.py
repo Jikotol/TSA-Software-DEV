@@ -53,7 +53,7 @@ def create():
             fc_id_list = request.form["kept-card-list"].split(",")
             fc_id_list = [int(id) for id in fc_id_list]
 
-            merged_set_id_list = request.form["kept-card-list"].split(",")
+            merged_set_id_list = request.form["set-id-list"].split(",")
             merged_set_id_list = [int(id) for id in merged_set_id_list]
 
             cards = Flashcard.query.filter(

@@ -2,9 +2,9 @@
 Handles event handling and calling the functions
 */
 
-import { loadCard, flipCard } from "./flashcard.js"
+import { loadCard, updateCardSide } from "./flashcard.js"
 
-export async function initCardData(setId, cardContainer) {
+export async function initCardData(setId, frontDiv, backDiv) {
 
     // Fetches set object and list of card objects
     const request = await fetch("/api/study/" + setId);
@@ -20,7 +20,8 @@ export async function initCardData(setId, cardContainer) {
         side: "front",
         termEl: null,
         visualEl: null,
-        cardContainer: cardContainer
+        frontDiv: frontDiv,
+        backDiv: backDiv,
     }
 
     return [cards, state]
@@ -31,18 +32,24 @@ export function getCardStructureElements() {
     return {
         cardButtonsDiv,
         nameHeader: document.getElementById("name-header"),
-        cardContainer: document.getElementById("card-div")
+        cardDiv: document.getElementById("card-div"),
     }
 }
 
 export function setupFlashcard(elements, cards, cardState) {
-    const { nameHeader, cardContainer } = elements;
+    const { nameHeader, cardDiv } = elements;
 
     nameHeader.innerText = cardState.setName;
 
     // Flips card
-    cardContainer.addEventListener("click", () => {
-        flipCard(cards, cardState)
+    cardDiv.addEventListener("click", () => {
+        console.log(cardState.side)
+        updateCardSide(cardState)
+        if (cardState.side == "front") {
+            cardDiv.style.transform = "rotateX(0deg)";
+        } else {
+            cardDiv.style.transform = "rotateX(180deg)";
+        }
     });
 
     document.addEventListener("DOMContentLoaded", () => {

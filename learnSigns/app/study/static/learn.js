@@ -20,9 +20,23 @@ function setupFlashcardUpdate(elements, cards, cardState) {
         if (event.target.tagName === "BUTTON") {
             selectWeightedCard(cards, cardState);
             loadCard(cards, cardState);
+
+            /* DEV UTIL: Track card eFactors */
+            logCardEFactors(cards);
+            cardState
         }
     })
     
+}
+
+/* DEV UTIL: Track card eFactors */
+function logCardEFactors(cards) {
+    let log = "";
+    for (let i = 0; i < cards.length; i++) {
+        let flashcard = cards[i];
+        log = log + flashcard.eFactor + " ";
+    }
+    console.log(log);
 }
 
 function getAllLearnElements() {

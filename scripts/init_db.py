@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS flashcard_sets (
     user_id INTEGER,
     default_front TEXT NOT NULL,
     default_back TEXT NOT NULL,
+    mastery_score INTEGER,
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 )
 """

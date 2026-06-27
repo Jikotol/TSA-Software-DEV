@@ -22,11 +22,12 @@ function setupNavigationButtons(elements) {
     const { goToHomeButton, returnToSetsButton } = elements;
 
     goToHomeButton.addEventListener("click", () => {
-        window.location.href = "/sets/"
+        window.location.href = "/";
+        
     })
     
     returnToSetsButton.addEventListener("click", () => {
-        window.location.href = "/home/"
+        window.location.href = "/sets/";
     })
 }
 
@@ -60,7 +61,7 @@ function calculateScore(quizState, quizData) {
 
     const questionNum = quizState["questionNum"];
 
-    return ((score / questionNum) * 100)
+    return Math.floor((score / questionNum) * 100)
 }
 
 async function updateMasteryLevel(flashcardSetId, score) {

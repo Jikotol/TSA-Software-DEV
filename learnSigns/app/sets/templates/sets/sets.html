@@ -1,20 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Select Flashcard{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('sets.static', filename='css/sets.css')}}">
+{% endblock %}
+
 {% block content %}
 
 {% include "partials/_navigation-bar.html" %}
 
-    <h1 id="set-section-header">Choose Flashcard Set</h1>
-    <ul id="set-cards-ul">
-    {% if fc_sets %}
-        {% for fc_set in fc_sets %}
-            <li class="set-card" data-set-id="{{ fc_set._id }}" name="set-card">{{ fc_set.name }}</div>
-        {% endfor %}
-    {% else %}
-        <p>No Flashcard Sets Found</p>
-        <p>To make a flashcard set, click on a gloss and click the "Create Flashcard" button<p>
-    {% endif %}
-    </ul>
+    <h1 class="header-title vertical-align in-line" id="set-section-header">Choose a Flashcard Set</h1>
+    <button class="in-line vertical-align" hidden id="undo-merge-button">Undo Merge</button>
+    
+    
+    <div id="flashcard-set-container-div" class="flashcard-set-container-div">
+        <ul id="set-cards-ul" class="flashcard-set-ul">
+        {% if fc_sets %}
+                {% for fc_set in fc_sets %}
+                    <li class="set-card" data-set-id="{{ fc_set._id }}" 
+                    data-mastery-score="{{ fc_set.mastery_score }}"
+                    name="set-card">{{ fc_set.name }}</li>
+                {% endfor %}
+                {% else %}
+                <p>No Flashcard Sets Found</p>
+                <p>To make a flashcard set, click on a gloss and click the "Create Flashcard" button<p>
+                    {% endif %}
+                    
+            </ul>
+        </div>
+    
 
     <!-- Dialog element for previewing set and displaying set info-->
     {% include "partials/_set-preview.html" %}
@@ -25,14 +39,46 @@
         <button id="no-delete">No</button>
     </dialog>
 
+    
+
 {% endblock %}
 
 {% block script %}
 
     <script type="module">
         let setId = 0;
+        let clickedSet = "";
 
         const cardsList = document.getElementById("set-cards-ul");
+
+        setMasteryColors();
+
+        function setMasteryColors() {
+            for (const set of cardsList.children) {
+                if (set.tagName === "LI") {
+                    set.style = chooseSetColors(set.dataset.masteryScore);
+                }
+            }
+        }
+
+        function chooseSetColors(masteryScore) {
+            if (masteryScore == "None") {
+                return 
+            }
+            let mastery = "high";
+            if (masteryScore < 50) {
+                mastery = "low";
+            } else if (masteryScore < 80) {
+                mastery = "medium";
+            }
+
+            return `
+                background-color: var(--set-${mastery}-mastery-color-base);
+                border-color: var(--set-${mastery}-mastery-color-border);
+            `;
+
+            
+        }
 
         let mergeMode = false;
         const baseMergeUrl = "{{ url_for('sets.merge_sets', set_id_1=1, set_id_2=2) }}";
@@ -42,16 +88,22 @@
             window.location.href = mergeUrl;
         }
 
-        // User clicks the setsx
+        // User clicks the sets
         cardsList.addEventListener("click", (event) => {
-
             // Loads and shows set info
+
             if (event.target.tagName === "LI") {
+                clickedSet = event.target;
                 if (mergeMode) {
-                    goToMergePage(setId, event.target.dataset.setId);
+                    if (setId != event.target.dataset.setId) {
+                        goToMergePage(setId, event.target.dataset.setId); 
+                    } else {
+                        writeUniqueSetsErrorMsg();
+                    }
+                } else {
+                    setId = event.target.dataset.setId;
+                    loadPreview(event.target.dataset.setId);
                 }
-                setId = event.target.dataset.setId;
-                loadPreview(event.target.dataset.setId);
             }
         })
 
@@ -98,6 +150,7 @@
         import { setupReviewActions } from "{{ url_for('display.static', filename='review.js') }}";
 
         const setInfoDialog = document.getElementById("set-info-container");
+        const setPreviewDiv = document.getElementById("set-preview-div");
 
         async function loadPreview(setId) {
             const dataRequest = await fetch("/api/sets/" + setId);
@@ -106,17 +159,20 @@
             const setData = await dataRequest.json();
             const previewHTML = await previewRequest.text()
 
-            document.getElementById("set-preview-div").innerHTML = previewHTML;
+            setPreviewDiv.innerHTML = previewHTML;
 
             // Initializes data for event handlers
-            const cardContainer = document.getElementById("card-div");
-            const [cards, cardState] = await initCardData(setId, cardContainer);
+            const frontDiv = document.getElementById("flashcard-front-div");
+            const backDiv = document.getElementById("flashcard-back-div");
+            const [cards, cardState] = await initCardData(setId, frontDiv, backDiv);
 
             // Sets up event listeners
             setupReviewActions(cards, cardState);
 
             if (cards.length == 1) {
                 document.getElementById("learn-button").style.display = "none";
+            } else {
+                document.getElementById("learn-button").style.display = "inline";
             }
 
             const deleteSetButton = document.getElementById("delete-button")
@@ -156,12 +212,29 @@
         }
 
         const setSectionHeader = document.getElementById("set-section-header");
+        const undoMergeButton = document.getElementById("undo-merge-button");
 
         function enableMergeMode() {
             setInfoDialog.close();
             setSectionHeader.innerText = "Choose Flashcard Set to Merge!"
             mergeMode = true;
+            
+            undoMergeButton.hidden = false;
         }
+
+        undoMergeButton.addEventListener("click", disableMergeMode);
+
+        function disableMergeMode() {
+            setSectionHeader.innerText = "Choose Flashcard Set"
+            mergeMode = false;
+            undoMergeButton.hidden = true;
+        }
+
+        function writeUniqueSetsErrorMsg() {
+            setSectionHeader.innerText = "Must merge with a different set!";
+        }
+
+        
         
     </script>
 

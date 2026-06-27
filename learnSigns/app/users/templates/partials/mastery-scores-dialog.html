@@ -1,0 +1,19 @@
+<dialog id="mastery-scores-dialog">
+    <div id="dialog-header" class="dialog-info-header">
+        <button id="close-button" class="info-close-button">X</button>    
+    </div>
+
+    <div class="stats-container">
+        <div id="stats-header" class="stats-row">
+            <span class="set-name">Flashcard Set Name</span>
+            <span class="score-badge status-none">Mastery Score</span>
+        </div>
+        {% for fc_set in user.flashcard_sets %}
+        <div class="stats-row">
+            <span class="set-name">{{ fc_set.name }}</span>
+            <span class="score-badge status-none">{{ fc_set.mastery_score }}</span>
+        </div>
+        {% endfor %}
+    </div>
+        
+</dialog>

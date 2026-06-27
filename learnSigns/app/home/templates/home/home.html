@@ -14,7 +14,7 @@
     <div id="search-div">
         <form action="" method="POST">
             <label for="gloss-search">Search for ASL word: </label>
-            <div class="search-container">
+            <div class="text-input-container">
                 <input id="gloss-search" name="search" type="text" placeholder="Search for ASL word">
                 <div id="suggestions-div" class="suggestions-container" hidden>
                     <ul class="search-suggestions" id="typing-suggestions">
@@ -35,7 +35,7 @@
             </li>
         {% endfor %}
     </ul>
-    <div class="video-container">
+    <div class="grid-element-container">
         {% for (main_gloss, head_gloss) in random_vid_tuples %}
             {% set main_gloss = main_gloss %}
             {% set head_gloss = head_gloss %}

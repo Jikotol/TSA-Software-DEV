@@ -46,6 +46,7 @@ def sets():
         user = User.query.filter_by(_id=session["user_id"]).first()
 
         if user.flashcard_sets:
+
             return render_template("sets/sets.html", fc_sets=user.flashcard_sets)
         return render_template("sets/sets.html")
     else:

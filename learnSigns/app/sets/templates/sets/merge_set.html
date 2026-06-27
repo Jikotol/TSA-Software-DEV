@@ -66,12 +66,14 @@
         </fieldset>
 
         <input type="hidden" name="kept-card-list" id="hidden-card-id-list">
-        <input type="hidden" name="set_id-list" value="{{ fc_set1._id }},{{ fc_set2._id }}">
+        <input type="hidden" name="set-id-list" value="{{ fc_set1._id }},{{ fc_set2._id }}">
 
-        <input type="submit" value="Submit">
-        <input type="reset" value="Reset">
-
+        <button type="submit" value="Submit">Submit</button>
+        <button type="reset" value="Reset">Reset</button>
+            
     </form>
+
+    <button type="button" id="undo-merge-button">Undo Merge</button>
 
 {% endblock %}
 
@@ -177,6 +179,12 @@
                 return termIdPair[1];
             });
 
+        })
+
+        const undoMergeButton = document.getElementById("undo-merge-button");
+
+        undoMergeButton.addEventListener("click", () => {
+            window.location.href = "{{ url_for('sets.sets') }}";
         })
 
     </script>

@@ -31,8 +31,9 @@
         const setId = window.location.pathname.split("/").pop();
 
         // Initializes data for event handlers
-        const cardContainer = document.getElementById("card-div");
-        const [cards, cardState] = await initCardData(setId, cardContainer)
+        const frontDiv = document.getElementById("flashcard-front-div");
+        const backDiv = document.getElementById("flashcard-back-div");
+        const [cards, cardState] = await initCardData(setId, frontDiv, backDiv)
 
         const cardButtonsDiv = document.getElementById("flashcard-actions");
         const sessionState = initSessionState(cards, cardState.setName, setId);

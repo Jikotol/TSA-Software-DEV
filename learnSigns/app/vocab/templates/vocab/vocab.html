@@ -7,7 +7,7 @@
     <h1>{{ main_gloss.main_gloss }}</h1>
     <div id="vocab-container" class="vocab-container">
         <form action="/create/configure/flashcards" method="POST">
-            <button class="special-buttons" type="submit" {% if not user %}hidden{% endif %}>Create Flashcard</button>
+            <button type="submit" class="special-buttons" {% if not user %} hidden {% endif %} >Create Flashcard</button>
             <select id="gloss-select" name="gloss_id" {% if main_gloss.glosses|length == 1 %}hidden="hidden"{% endif %}>
                 {% for g in main_gloss.glosses %}
                     <option value="{{ g._id }}" {% if g._id == gloss._id %}selected{% endif %}>{{ g.asl_gloss }}</option>
@@ -86,7 +86,17 @@
             }
         }
 
+        function navigateToGloss(glossID) {
+            history.pushState({}, "", `/vocab/${MAIN_GLOSS_ID}/${glossID}`);
+        }
+
         const glossSelectEl = document.getElementById("gloss-select");
+
+        glossSelectEl.addEventListener("change", () => {
+            if (glossSelectEl.value) {
+                navigateToGloss(glossSelectEl.value);
+            }
+        })
 
         // Loads DOM info when url changes
         window.addEventListener("DOMContentLoaded", () => {

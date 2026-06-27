@@ -1,7 +1,7 @@
 from flask import Blueprint, session, request, redirect, url_for, render_template
 from .services import sign_in, add_user
 
-users_bp = Blueprint("users", __name__, url_prefix="/users", template_folder="templates")
+users_bp = Blueprint("users", __name__, url_prefix="/users", template_folder="templates", static_folder="static", static_url_path="/users/static")
 
 
 @users_bp.route("/", methods=["POST", "GET"])
@@ -32,8 +32,9 @@ def login():
 
     # Makes sure session is updated correctly and redirects signed in user away from login page
     if "username" in session:
+        print(session["username"])
         sign_in(session["username"])
-        return redirect(url_for("home.home"))
+        #return redirect(url_for("home.home"))
 
     # Renders "login.html" for users to sign in
     return render_template("users/login.html")
